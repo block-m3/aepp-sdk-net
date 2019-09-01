@@ -16,6 +16,8 @@ using Org.BouncyCastle.Utilities.Encoders;
 namespace BlockM3.AEternity.SDK.Integration.Tests
 {
     [TestClass]
+    [TestCategory("Integration Tests")]
+
     public class TransactionContractsTest : BaseTest
     {
         private static string localDeployedContractId;

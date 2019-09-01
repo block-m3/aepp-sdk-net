@@ -16,6 +16,7 @@ using Newtonsoft.Json;
 namespace BlockM3.AEternity.SDK.Integration.Tests
 {
     [TestClass]
+    [TestCategory("Integration Tests")]
     public class PaymentSplitterContractTest : BaseTest
     {
         private static string paymentSplitterSource;

@@ -9,6 +9,7 @@ using Newtonsoft.Json.Linq;
 namespace BlockM3.AEternity.SDK.Integration.Tests
 {
     [TestClass]
+    [TestCategory("Integration Tests")]
     public class CompilerServiceTest : BaseTest
     {
         [TestMethod]

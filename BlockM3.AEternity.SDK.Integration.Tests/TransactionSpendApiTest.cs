@@ -10,13 +10,13 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace BlockM3.AEternity.SDK.Integration.Tests
 {
     [TestClass]
+    [TestCategory("Integration Tests")]
     public class TransactionSpendApiTest : BaseTest
     {
         /**
- * create an unsigned native spend transaction
- *
- */
-
+         * create an unsigned native spend transaction
+         *
+         */
 
         [TestMethod]
         public void BuildNativeSpendTransactionTest()

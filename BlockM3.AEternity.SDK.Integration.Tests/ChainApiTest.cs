@@ -5,6 +5,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace BlockM3.AEternity.SDK.Integration.Tests
 {
     [TestClass]
+    [TestCategory("Integration Tests")]
     public class ChainApiTest : BaseTest
     {
         [TestMethod]

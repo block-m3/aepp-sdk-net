@@ -18,6 +18,7 @@ using Contract = BlockM3.AEternity.SDK.ClientModels.Contract;
 namespace BlockM3.AEternity.SDK.Integration.Tests
 {
     [TestClass]
+    [TestCategory("Integration Tests")]
     public class FluentTests : BaseTest
     {
         [TestMethod]
