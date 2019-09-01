@@ -66,6 +66,7 @@ Account account = client.ConstructAccount(new BaseKeyPair("79816BBF860B95600DDFA
 Contract contract = account.ConstructContract(IdentityContractSourceCode); //string containing the contract source
 contract.Deploy(0, 0, 2000000000, 100000).WaitForFinish(TimeSpan.FromSeconds(30));
 ContractReturn<int> re = contract.StaticCall<int>("main", 0, 42);
+Assert.AreEqual(re.ReturnValue, 42);
 ```
 
 ```csharp
@@ -85,7 +86,7 @@ input.Add(rec3.PublicKey, 20);
 ulong paymentValue = (ulong)1m.ToAettos(Unit.AE);
 Contract contract = account.ConstructContract(paymentSplitterSource); //string containing the contract source
 contract.MeasureAndDeploy(0, 0, Constants.BaseConstants.MINIMAL_GAS_PRICE, "init", input).WaitForFinish(TimeSpan.FromSeconds(30));
-contract.MeasureAndCall("payAndSplit", Constants.BaseConstants.MINIMAL_GAS_PRICE, (ulong) paymentValue).WaitForFinish(TimeSpan.FromSeconds(30));
+contract.MeasureAndCall("payAndSplit", Constants.BaseConstants.MINIMAL_GAS_PRICE, paymentValue).WaitForFinish(TimeSpan.FromSeconds(30));
 ```
 
 ## Oracles
@@ -138,7 +139,7 @@ Task.Factory.StartNew(svc.Start); //Starts the CityTemperature Service, server w
 
 //Client Part
 RegisteredOracle<CityQuery, TemperatureResponse> reg = account.GetOracle<CityQuery, TemperatureResponse>(query.Id);
-TemperatureResponse resp = reg.Ask(new CityQuery {City = "montevideo"}).WaitForFinish(TimeSpan.FromSeconds(300));
+TemperatureResponse resp = reg.Ask(new CityQuery {City = "montevideo"}).WaitForFinish(TimeSpan.FromSeconds(30));
 Assert.AreEqual(resp.TemperatureCelsius, 24);
 resp = reg.Ask(new CityQuery {City = "sofia"}).WaitForFinish(TimeSpan.FromSeconds(30));
 Assert.AreEqual(resp.TemperatureCelsius, 25);
