@@ -162,4 +162,5 @@ svc.Stop(); //Stop the service
 
 - State Channels are wip, not usable yet. websocket code is not started yet.
 - Serialization/Deseralization code for Contracts/Oracle inputs and outputs are wacky. Requires better understanding of the oracle/contract input/output formats.
+- nugets will be released, when this library jump out of beta.
 
