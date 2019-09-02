@@ -8,7 +8,7 @@ Master is beta, not for production enviroment.
 Loosely based on the following sdks:
 
 * [aepp-sdk-java](https://github.com/kryptokrauts/aepp-sdk-java)
-* [aepp-sdk-pytho](https://github.com/aeternity/aepp-sdk-python)
+* [aepp-sdk-python](https://github.com/aeternity/aepp-sdk-python)
 * [aepp-sdk-js](https://github.com/aeternity/aepp-sdk-js)
 
 Supports
@@ -18,10 +18,10 @@ AEternity >= v4.2.0 & Sophia >= v3.2.0
 
 * All the code is async. But Sync extension methods exists for easy use.
 * Net Standard 2.0. Both .NET Core and .NET Framework are supported
-* You can use the FlatClient for porting, or the normal client which is fluent and easy to use.
+* You can use the FlatClient for porting (it maps all the Node/Compiler functions), or the normal client which is fluent and easy to use.
 * OracleService and AsyncOracleService provides a background service capable of running an oracle.
-* The Fluent Client auto serialize/deserialize inputs and outputs into .net objects. 
-
+* The Fluent Client serialize/deserialize inputs and outputs into .net objects, so you dont have to worry about serializing or deserializing stuff from contracts or oracles.
+* Several other features, like automanaging of the nonce, Easy checking or waiting for transaction finish, combination functions like MeasureAndCall (Dry & Call), etc.
 
 # Examples
 
@@ -161,6 +161,6 @@ svc.Stop(); //Stop the service
 **TODO**
 
 - State Channels are wip, not usable yet. websocket code is not started yet.
-- Serialization/Deseralization code for Contracts/Oracle inputs and outputs are wacky. Requires better understanding of the oracle/contract input/output formats.
+- Serialization/Deseralization code for Contracts inputs and outputs are wacky. Requires better code and understanding of the contract input/output formats. 
+- Better error handling.
 - nugets will be released, when this library jump out of beta.
-
