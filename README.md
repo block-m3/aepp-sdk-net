@@ -163,6 +163,6 @@ svc.Stop(); //Stop the service
 **TODO**
 
 - State Channels are wip, not usable yet. websocket code is not started yet.
-- Serialization/Deseralization code for Contracts inputs and outputs are wacky. Requires better code and understanding of the contract input/output formats. 
+- Serialization/Deserialization code for Contracts inputs and outputs are wacky. Requires better code,understanding of the contract input/output formats and testing. 
 - Better error handling.
 - nugets will be released, when this library jump out of beta.
