@@ -37,6 +37,8 @@ BaseKeyPair tokp = BaseKeyPair.Generate();
 Account to = client.ConstructAccount(kp);
 ulong transfer = (ulong)1m.ToAettos(Unit.AE);
 account.SendAmount(to.KeyPair.PublicKey, transfer).WaitForFinish(TimeSpan.FromSeconds(30));
+to.Refresh();
+Assert.AreEqual(to.Balance,transfer);
 ```
 
 ## Name Service
