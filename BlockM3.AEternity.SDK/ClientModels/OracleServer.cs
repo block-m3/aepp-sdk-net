@@ -10,14 +10,14 @@ namespace BlockM3.AEternity.SDK.ClientModels
 {
     //T Input Format
     //S Output Format
-    public class OracleQuery<T, S> : BaseFluent
+    public class OracleServer<T, S> : BaseFluent
     {
-        internal OracleQuery(Account account) : base(account)
+        internal OracleServer(Account account) : base(account)
         {
-            Id = Constants.ApiIdentifiers.ORACLE_PUBKEY + "_" + account.KeyPair.PublicKey.Substring(3);
+            OracleId = Constants.ApiIdentifiers.ORACLE_PUBKEY + "_" + account.KeyPair.PublicKey.Substring(3);
         }
 
-        public string Id { get; }
+        public string OracleId { get; }
 
 
         public string QueryFormat { get; internal set; }
@@ -33,7 +33,7 @@ namespace BlockM3.AEternity.SDK.ClientModels
         public async Task<List<OracleQuestion<T, S>>> QueryAsync(ushort? limit, string lastQueryId = null, CancellationToken token = default(CancellationToken))
         {
             Account.ValidatePrivateKey();
-            OracleQueries queries = await Account.Client.GetOracleQueriesAsync(Id, lastQueryId, limit, Type.Open, token).ConfigureAwait(false);
+            OracleQueries queries = await Account.Client.GetOracleQueriesAsync(OracleId, lastQueryId, limit, Type.Open, token).ConfigureAwait(false);
             if (queries.OracleQueriesCollection == null || queries.OracleQueriesCollection.Count == 0)
                 return new List<OracleQuestion<T, S>>();
             return queries.OracleQueriesCollection.Select(a => new OracleQuestion<T, S>(Account, a)).ToList();
@@ -44,7 +44,7 @@ namespace BlockM3.AEternity.SDK.ClientModels
         {
             Account.ValidatePrivateKey();
             Account.Nonce++;
-            await SignAndSendAsync(Account.Client.CreateOracleExtendTransaction(Id, extendTtl, fee, Account.Nonce, Account.Ttl), token).ConfigureAwait(false);
+            await SignAndSendAsync(Account.Client.CreateOracleExtendTransaction(OracleId, extendTtl, fee, Account.Nonce, Account.Ttl), token).ConfigureAwait(false);
             return new InProgress<bool>(new WaitForHash(this));
         }
 

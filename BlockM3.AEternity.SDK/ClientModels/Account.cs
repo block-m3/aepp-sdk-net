@@ -148,22 +148,22 @@ namespace BlockM3.AEternity.SDK.ClientModels
             return new InProgress<PreClaim>(new WaitForHash(cl));
         }
 
-        public async Task<InProgress<OracleQuery<T, S>>> RegisterOracleAsync<T, S>(ulong queryFee = Constants.BaseConstants.ORACLE_QUERY_FEE, ulong fee = Constants.BaseConstants.FEE, Ttl ttl = default(Ttl), ushort abiVersion = Constants.BaseConstants.ORACLE_VM_VERSION, CancellationToken token = default(CancellationToken))
+        public async Task<InProgress<OracleServer<T, S>>> RegisterOracleAsync<T, S>(ulong queryFee = Constants.BaseConstants.ORACLE_QUERY_FEE, ulong fee = Constants.BaseConstants.FEE, Ttl ttl = default(Ttl), ushort abiVersion = Constants.BaseConstants.ORACLE_VM_VERSION, CancellationToken token = default(CancellationToken))
         {
             ValidatePrivateKey();
             string queryformat = SophiaMapper.ClassToOracleFormat<T>();
             string responseformat = SophiaMapper.ClassToOracleFormat<S>();
-            OracleQuery<T, S> c = new OracleQuery<T, S>(this);
+            OracleServer<T, S> c = new OracleServer<T, S>(this);
             Nonce++;
             await c.SignAndSendAsync(Client.CreateOracleRegisterTransaction(queryformat, responseformat, KeyPair.PublicKey, queryFee, fee, ttl?.Type ?? TTLType.Delta, ttl?.Value ?? Constants.BaseConstants.ORACLE_TTL_VALUE, abiVersion, Nonce, Ttl), token).ConfigureAwait(false);
-            return new InProgress<OracleQuery<T, S>>(new WaitForHash(c), new GetOracle<T, S>());
+            return new InProgress<OracleServer<T, S>>(new WaitForHash(c), new GetOracle<T, S>());
         }
 
-        public async Task<OracleQuery<T, S>> GetOwnOracleAsync<T, S>(CancellationToken token = default(CancellationToken))
+        public async Task<OracleServer<T, S>> GetOwnOracleAsync<T, S>(CancellationToken token = default(CancellationToken))
         {
             ValidatePrivateKey();
-            OracleQuery<T, S> c = new OracleQuery<T, S>(this);
-            RegisteredOracle oracle = await Client.GetRegisteredOracleAsync(c.Id, token).ConfigureAwait(false);
+            OracleServer<T, S> c = new OracleServer<T, S>(this);
+            RegisteredOracle oracle = await Client.GetRegisteredOracleAsync(c.OracleId, token).ConfigureAwait(false);
             c.AbiVersion = oracle.AbiVersion;
             c.QueryFee = oracle.QueryFee;
             c.QueryFormat = oracle.QueryFormat;
@@ -172,17 +172,17 @@ namespace BlockM3.AEternity.SDK.ClientModels
             return c;
         }
 
-        public InProgress<OracleQuery<T, S>> CreateOracleQueryProgressFromTx<T, S>(string txhash)
+        public InProgress<OracleServer<T, S>> CreateOracleQueryProgressFromTx<T, S>(string txhash)
         {
-            OracleQuery<T, S> c = new OracleQuery<T, S>(this);
+            OracleServer<T, S> c = new OracleServer<T, S>(this);
             c.TxHash = txhash;
-            return new InProgress<OracleQuery<T, S>>(new WaitForHash(c));
+            return new InProgress<OracleServer<T, S>>(new WaitForHash(c));
         }
 
-        public async Task<RegisteredOracle<T, S>> GetOracleAsync<T, S>(string oraclepubkey, CancellationToken token = default(CancellationToken))
+        public async Task<OracleClient<T, S>> GetOracleAsync<T, S>(string oraclepubkey, CancellationToken token = default(CancellationToken))
         {
             RegisteredOracle oracle = await Client.GetRegisteredOracleAsync(oraclepubkey, token).ConfigureAwait(false);
-            RegisteredOracle<T, S> re = new RegisteredOracle<T, S>(this);
+            OracleClient<T, S> re = new OracleClient<T, S>(this);
             re.AbiVersion = oracle.AbiVersion;
             re.Id = oracle.Id;
             re.QueryFee = oracle.QueryFee;

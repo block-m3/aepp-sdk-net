@@ -92,11 +92,11 @@ namespace BlockM3.AEternity.SDK.Integration.Tests
             oracleAccount.Refresh();
             Assert.AreEqual(oracleAccount.Balance, money);
 
-            OracleQuery<CityQuery, TemperatureResponse> query = oracleAccount.RegisterOracle<CityQuery, TemperatureResponse>().WaitForFinish(TimeSpan.FromSeconds(30));
+            OracleServer<CityQuery, TemperatureResponse> query = oracleAccount.RegisterOracle<CityQuery, TemperatureResponse>().WaitForFinish(TimeSpan.FromSeconds(30));
             CityTemperatureService svc = new CityTemperatureService();
             svc.Query = query;
             Task.Factory.StartNew(svc.Start);
-            RegisteredOracle<CityQuery, TemperatureResponse> reg = account.GetOracle<CityQuery, TemperatureResponse>(query.Id);
+            OracleClient<CityQuery, TemperatureResponse> reg = account.GetOracle<CityQuery, TemperatureResponse>(query.OracleId);
             TemperatureResponse resp = reg.Ask(new CityQuery {City = "montevideo"}).WaitForFinish(TimeSpan.FromSeconds(300));
             Assert.AreEqual(resp.TemperatureCelsius, 24);
             resp = reg.Ask(new CityQuery {City = "sofia"}).WaitForFinish(TimeSpan.FromSeconds(30));

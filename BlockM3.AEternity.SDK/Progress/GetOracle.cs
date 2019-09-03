@@ -11,8 +11,8 @@ namespace BlockM3.AEternity.SDK.Progress
 
         public async Task<(object result, bool done)> CheckForFinishAsync(object input, CancellationToken token = default(CancellationToken))
         {
-            OracleQuery<T, S> c = (OracleQuery<T, S>) input;
-            RegisteredOracle oracle = await c.Account.Client.GetRegisteredOracleAsync(c.Id, token).ConfigureAwait(false);
+            OracleServer<T, S> c = (OracleServer<T, S>) input;
+            RegisteredOracle oracle = await c.Account.Client.GetRegisteredOracleAsync(c.OracleId, token).ConfigureAwait(false);
             c.AbiVersion = oracle.AbiVersion;
             c.QueryFee = oracle.QueryFee;
             c.QueryFormat = oracle.QueryFormat;

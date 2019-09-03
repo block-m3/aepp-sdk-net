@@ -13,7 +13,7 @@ namespace BlockM3.AEternity.SDK.Progress
 
         public async Task<(object result, bool done)> CheckForFinishAsync(object input, CancellationToken token = default(CancellationToken))
         {
-            RegisteredOracle<T, S> r = (RegisteredOracle<T, S>) input;
+            OracleClient<T, S> r = (OracleClient<T, S>) input;
 
 
             OracleQuery q = await r.Account.Client.GetOracleAnswerAsync(r.Id, r.QueryId, token).ConfigureAwait(false);

@@ -8,9 +8,9 @@ using BlockM3.AEternity.SDK.Utils;
 
 namespace BlockM3.AEternity.SDK.ClientModels
 {
-    public class RegisteredOracle<T, S> : BaseFluent
+    public class OracleClient<T, S> : BaseFluent
     {
-        internal RegisteredOracle(Account account) : base(account)
+        internal OracleClient(Account account) : base(account)
         {
         }
 

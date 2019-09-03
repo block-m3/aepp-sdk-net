@@ -137,13 +137,13 @@ account.SendAmount(oracleaccount.KeyPair.PublicKey, transfer).WaitForFinish(Time
 oracleAccount.Refresh();
 
 //Server part
-OracleQuery<CityQuery, TemperatureResponse> query = oracleAccount.RegisterOracle<CityQuery, TemperatureResponse>().WaitForFinish(TimeSpan.FromSeconds(30));
+OracleServer<CityQuery, TemperatureResponse> server = oracleAccount.RegisterOracle<CityQuery, TemperatureResponse>().WaitForFinish(TimeSpan.FromSeconds(30));
 CityTemperatureService svc = new CityTemperatureService();
-svc.Query = query; //Assign the query to the Service
+svc.Server = server; //Assign the query to the Service
 Task.Factory.StartNew(svc.Start); //Starts the CityTemperature Service, server will run on other thread.
 
 //Client Part
-RegisteredOracle<CityQuery, TemperatureResponse> reg = account.GetOracle<CityQuery, TemperatureResponse>(query.Id);
+OracleClient<CityQuery, TemperatureResponse> reg = account.GetOracle<CityQuery, TemperatureResponse>(server.OracleId);
 TemperatureResponse resp = reg.Ask(new CityQuery {City = "montevideo"}).WaitForFinish(TimeSpan.FromSeconds(30));
 Assert.AreEqual(resp.TemperatureCelsius, 24);
 resp = reg.Ask(new CityQuery {City = "sofia"}).WaitForFinish(TimeSpan.FromSeconds(30));

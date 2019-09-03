@@ -48,7 +48,7 @@ namespace BlockM3.AEternity.SDK.ClientModels
             _logger = NullLoggerFactory.Instance.CreateLogger<AsyncOracleService<T, S>>();
         }
 
-        public OracleQuery<T, S> Query { get; set; }
+        public OracleServer<T, S> Server { get; set; }
 
         public ulong RespondTtl { get; set; } = Constants.BaseConstants.ORACLE_RESPONSE_TTL_VALUE;
 
@@ -64,9 +64,9 @@ namespace BlockM3.AEternity.SDK.ClientModels
 
             while (!stoppingToken.IsCancellationRequested)
             {
-                if (Query != null)
+                if (Server != null)
                 {
-                    List<OracleQuestion<T, S>> q = await Query.QueryAsync(10, null, stoppingToken).ConfigureAwait(false);
+                    List<OracleQuestion<T, S>> q = await Server.QueryAsync(10, null, stoppingToken).ConfigureAwait(false);
                     foreach (OracleQuestion<T, S> m in q)
                     {
                         int cnt = 0;
