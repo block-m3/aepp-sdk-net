@@ -20,7 +20,10 @@ AEternity >= v4.2.0 & Sophia >= v3.2.0
 * Net Standard 2.0. Both .NET Core and .NET Framework are supported
 * You can use the FlatClient for porting (it maps all the Node/Compiler functions), or the normal client which is fluent and easy to use.
 * OracleService and AsyncOracleService provides a background service capable of running an oracle.
-* The Fluent Client serialize/deserialize inputs and outputs into .net objects, so you dont have to worry about serializing or deserializing stuff from contracts or oracles.
+* Clients Configuration constructor can use IConfiguration and ILogger for dependency injection on ASP NET projects.
+* OracleService/AsyncOracleService are based on BackgroundService, which can also be used on ASP NET projects as a singleton in the startup.
+* You can subclass the Configuration Class and override GetHttpClient so you can provide a custom HttpClient Factory if needed.
+* The Fluent Client serialize/de-serialize inputs and outputs into .net objects, so you don't have to worry about serializing or de-serializing stuff from contracts or oracles.
 * Several other features, like automanaging of the nonce, Easy checking or waiting for transaction finish, combination functions like MeasureAndCall (Dry & Call), etc.
 
 # Examples
@@ -149,6 +152,7 @@ resp = reg.Ask(new CityQuery {City = "hell"}).WaitForFinish(TimeSpan.FromSeconds
 Assert.AreEqual(resp.TemperatureCelsius, 2000);
 svc.Stop(); //Stop the service
 ```
+
 
 **Integration Testing on Windows 10 and Visual Studio How-To**
 
