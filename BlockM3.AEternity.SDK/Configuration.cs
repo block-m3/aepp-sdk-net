@@ -26,7 +26,7 @@ namespace BlockM3.AEternity.SDK
         public Configuration(ILoggerFactory loggerFactory, IConfiguration cfg)
         {
             _loggerfactory = loggerFactory ?? NullLoggerFactory.Instance;
-            _logger = loggerFactory?.CreateLogger<Configuration>();
+            _logger = _loggerfactory?.CreateLogger<Configuration>();
             if (_logger == null)
                 throw new ArgumentException("Unable to Create logger");
             if (cfg != null)
