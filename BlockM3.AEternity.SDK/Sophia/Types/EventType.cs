@@ -65,7 +65,7 @@ namespace BlockM3.AEternity.SDK.Sophia.Types
                 value = value.Substring(idx);
             if (value.StartsWith("(") && value.EndsWith(")"))
                 value = value.Substring(1, value.Length - 2).Trim();
-            string[] dicsplits = splitdicRegex.Split(value);
+            string[] dicsplits = SophiaMapper.SplitByComma(value);
             List<(string, PropertyInfo)> props = OrderProps(t.GetTypeInfo());
             object o = Activator.CreateInstance(t);
             if (props.Count < FieldTypes.Count || dicsplits.Length != FieldTypes.Count)

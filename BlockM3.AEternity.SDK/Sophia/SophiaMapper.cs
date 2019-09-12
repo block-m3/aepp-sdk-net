@@ -28,9 +28,64 @@ namespace BlockM3.AEternity.SDK.Sophia
 
     public static class SophiaMapper
     {
-        internal static Regex splitdicRegex = new Regex(",(?![^\\(\\[\\{\"]*[\"\\}\\]\\)])", RegexOptions.Compiled);
-        internal static Regex splitgrpRegex = new Regex(":(?![^\"'].*['\"])", RegexOptions.Compiled);
-        internal static Regex splitpipeRegex = new Regex("\\|(?![^\\(\\[\\{\"]*[\"\\}\\]\\)])", RegexOptions.Compiled);
+    
+
+        public static string[] SplitByComma(string input) => SplitBy(input, ',', ('(', ')'), ('[', ']'), ('{', '}'), ('"', '"')).ToArray();
+        public static string[] SplitByTwoPoints(string input) => SplitBy(input, ':', ('"', '"')).ToArray();
+        public static string[] SplitByPipe(string input) => SplitBy(input, '|', ('(', ')'), ('[', ']'), ('{', '}'), ('"', '"')).ToArray();
+
+        public static List<string> SplitBy(string input, char separator, params (char start, char end)[] pars)
+        {
+            List<(char start, char end)> ls = pars.ToList();
+
+            List<string> result=new List<string>();
+            int start = -1;
+            int accum = 0;
+            string constr = string.Empty;
+            foreach(char c in input)
+            {
+                if (c == separator && start==-1)
+                {
+                    if (constr.Trim() != string.Empty)
+                    {
+                        result.Add(constr);
+                        constr = string.Empty;
+                    }
+                    continue;
+                }
+                constr += c;
+                if (ls.Any(a => a.end == c))
+                {
+
+                    int pos = ls.IndexOf(ls.First(a => a.end == c));
+                    if (start == pos)
+                    {
+                        accum--;
+                        if (accum == 0)
+                            start = -1;
+                        continue;
+                    }
+                }
+                if (ls.Any(a => a.start == c))
+                {
+                    int pos = ls.IndexOf(ls.First(a => a.start == c));
+                    if (start == -1)
+                    {
+                        start = pos;
+                        accum = 1;
+                    }
+                    else if (start == pos)
+                    {
+                        accum++;
+                    }
+                }
+
+
+            }
+            if (constr.Trim()!=string.Empty)
+                result.Add(constr);
+            return result;
+        }
 
         public static string ClassToOracleFormat<T>()
         {
@@ -82,13 +137,13 @@ namespace BlockM3.AEternity.SDK.Sophia
             string s = t.Trim();
             if (s.StartsWith("{") && s.EndsWith("}"))
                 s = s.Substring(1, s.Length - 2);
-            string[] items = splitdicRegex.Split(s);
+            string[] items = SplitByComma(s);
             List<(string s, PropertyInfo p)> props = SophiaType.OrderProps(info);
             object o = Activator.CreateInstance(typeof(T));
 
             foreach (string n in items)
             {
-                string[] grp = splitgrpRegex.Split(n);
+                string[] grp = SplitByTwoPoints(n);
                 if (grp.Length != 2)
                     throw new ArgumentException($"Unable to deserialize Oracle response parameter {n}");
                 string key = grp[0].Trim();
@@ -257,7 +312,7 @@ namespace BlockM3.AEternity.SDK.Sophia
                     int eq = k.IndexOf('=');
                     if (eq > -1)
                         k = k.Substring(eq + 1);
-                    string[] sp = splitpipeRegex.Split(k);
+                    string[] sp = SplitByPipe(k);
                     foreach (string l in sp)
                     {
                         m.Events.Add(l.Trim());
@@ -287,7 +342,7 @@ namespace BlockM3.AEternity.SDK.Sophia
                     {
                         if (inputs.StartsWith("(") && inputs.EndsWith(")"))
                             inputs = inputs.Substring(1, inputs.Length - 2);
-                        string[] items = splitdicRegex.Split(inputs);
+                        string[] items = SplitByComma(inputs);
                         foreach (string l in items)
                         {
                             inps.Add(l.Trim());
@@ -409,7 +464,7 @@ namespace BlockM3.AEternity.SDK.Sophia
             evnt = evnt.Substring(idx).Trim();
             if (evnt.StartsWith("(") && evnt.EndsWith(")"))
                 evnt = evnt.Substring(1, evnt.Length - 2);
-            string[] typs = splitdicRegex.Split(evnt);
+            string[] typs = SplitByComma(evnt);
             List<SophiaType> types = new List<SophiaType>();
             foreach (string t in typs)
             {
@@ -426,7 +481,7 @@ namespace BlockM3.AEternity.SDK.Sophia
                 string n = entry.Substring(3).Trim();
                 if (n.StartsWith("(") && n.EndsWith(")"))
                     n = n.Substring(1, n.Length - 2);
-                string[] types = splitdicRegex.Split(n);
+                string[] types = SplitByComma(n);
                 if (types.Length != 2)
                     throw new ArgumentException($"Unable to parse map from '{entry}'");
                 SophiaType key = ParseEntry(types[0].Trim(), mapper);
@@ -455,7 +510,7 @@ namespace BlockM3.AEternity.SDK.Sophia
                     n = n.Substring(1, n.Length - 2);
                 if (n.Length > 0)
                 {
-                    string[] types = splitdicRegex.Split(n);
+                    string[] types = SplitByComma(n);
                     List<SophiaType> ft = types.Select(a => ParseEntry(a, mapper)).ToList();
                     return new TupleType(entry, ft);
                 }
@@ -468,7 +523,7 @@ namespace BlockM3.AEternity.SDK.Sophia
                 string n = entry.Substring(5).Trim();
                 if (n.StartsWith("(") && n.EndsWith(")"))
                     n = n.Substring(1, n.Length - 2);
-                n = n.Substring(1, n.Length - 2);
+                //n = n.Substring(1, n.Length - 2);
                 if (n.Length != 0)
                     return new BytesType(entry, int.Parse(n));
                 return new BytesType(entry, null);
@@ -511,11 +566,11 @@ namespace BlockM3.AEternity.SDK.Sophia
                         string grp = s.Substring(id + 1).Trim();
                         if (grp.StartsWith("{") && grp.EndsWith("}"))
                             grp = grp.Substring(1, grp.Length - 2);
-                        string[] spl = splitdicRegex.Split(grp);
+                        string[] spl = SplitByComma(grp);
                         Dictionary<string, SophiaType> types = new Dictionary<string, SophiaType>();
                         foreach (string n in spl)
                         {
-                            string[] sp2 = splitgrpRegex.Split(n);
+                            string[] sp2 = SplitByTwoPoints(n);
                             if (sp2.Length != 2)
                                 throw new ArgumentException($"Unable to record item {n}");
                             string key = sp2[0].Trim();

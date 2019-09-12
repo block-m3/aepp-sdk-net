@@ -53,7 +53,7 @@ namespace BlockM3.AEternity.SDK.Sophia.Types
             value = value.Trim();
             if (value.StartsWith("[") && value.EndsWith("]"))
                 value = value.Substring(1, value.Length - 2).Trim();
-            string[] items = splitdicRegex.Split(value);
+            string[] items = SophiaMapper.SplitByComma(value);
             IList en = (IList) Activator.CreateInstance(t);
             foreach (string s in items)
             {

@@ -65,12 +65,12 @@ namespace BlockM3.AEternity.SDK.Sophia.Types
                 value = value.Substring(idx);
             if (value.StartsWith("{") && value.EndsWith("}"))
                 value = value.Substring(1, value.Length - 2).Trim();
-            string[] dicsplits = splitdicRegex.Split(value);
+            string[] dicsplits = SophiaMapper.SplitByComma(value);
             List<(string, PropertyInfo)> props = OrderProps(t.GetTypeInfo());
             object o = Activator.CreateInstance(t);
             foreach (string s in dicsplits)
             {
-                string[] spl = splitgrpRegex.Split(s);
+                string[] spl = SophiaMapper.SplitByTwoPoints(s);
                 if (spl.Length != 2)
                     throw new ArgumentException($"Unable to record item {s}");
                 string name = spl[0].Trim();

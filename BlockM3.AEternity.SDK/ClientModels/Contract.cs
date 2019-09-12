@@ -203,7 +203,7 @@ namespace BlockM3.AEternity.SDK.ClientModels
         }
 
 
-        private async Task<string> EncodeCallDataAsync(string function, object[] pars, bool stateful, CancellationToken token)
+        public async Task<string> EncodeCallDataAsync(string function, object[] pars, bool stateful, CancellationToken token)
         {
             if (string.IsNullOrEmpty(function))
                 return null;

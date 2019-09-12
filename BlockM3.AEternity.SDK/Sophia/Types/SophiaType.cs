@@ -10,10 +10,7 @@ namespace BlockM3.AEternity.SDK.Sophia.Types
 {
     public abstract class SophiaType
     {
-        internal static Regex splitgrpRegex = new Regex(":(?![^\"'].*['\"])", RegexOptions.Compiled);
 
-        internal static Regex splitdicRegex = new Regex(",(?![^\\(\\[\\{\"]*[\"\\}\\]\\)])", RegexOptions.Compiled);
-        internal static Regex sepdicRegex = new Regex("\\[(.*)\\]\\s?=\\s?(.*)", RegexOptions.Compiled);
         internal static Regex numReg = new Regex("\\((.*)\\)", RegexOptions.Compiled);
 
         public SophiaType(string mapname)

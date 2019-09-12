@@ -60,7 +60,7 @@ namespace BlockM3.AEternity.SDK.Sophia.Types
                 value = value.Trim();
                 if (value.StartsWith("[") && value.EndsWith("]"))
                     value = value.Substring(1, value.Length - 2).Trim();
-                string[] items = splitdicRegex.Split(value);
+                string[] items = SophiaMapper.SplitByComma(value);
                 if (TupleTypes.Count > 0 && TupleTypes.Count != items.Length)
                     throw new ArgumentException($"The object has {t.GetFields().Length} in the tuple, the sophia type has {items.Length}");
                 List<object> objs = new List<object>();

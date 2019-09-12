@@ -50,15 +50,15 @@ namespace BlockM3.AEternity.SDK.Sophia.Types
             value = value.Trim();
             if (value.StartsWith("{") && value.EndsWith("}"))
                 value = value.Substring(1, value.Length - 2).Trim();
-            string[] dicsplits = splitdicRegex.Split(value);
-
+            string[] dicsplits = SophiaMapper.SplitByComma(value);
+            
             IDictionary dica = (IDictionary) Activator.CreateInstance(t);
             foreach (string s in dicsplits)
             {
-                Match k = sepdicRegex.Match(s);
-                if (!k.Success)
+                string[] dta = SophiaMapper.SplitByTwoPoints(s);
+                if (dta.Length!=2)
                     throw new ArgumentException($"Unable to parse dictionary item {s}");
-                dica.Add(KeyType.Deserialize(k.Groups[1].Value, t.GetGenericArguments()[0]), ValueType.Deserialize(k.Groups[2].Value, t.GetGenericArguments()[1]));
+                dica.Add(KeyType.Deserialize(dta[0].Trim(), t.GetGenericArguments()[0]), ValueType.Deserialize(dta[1].Trim(), t.GetGenericArguments()[1]));
             }
 
             return dica;
