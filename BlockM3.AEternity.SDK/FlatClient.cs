@@ -18,6 +18,7 @@ using BlockM3.AEternity.SDK.Transactions.NameService;
 using BlockM3.AEternity.SDK.Transactions.Oracles;
 using BlockM3.AEternity.SDK.Utils;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json.Linq;
 using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.Crypto.Parameters;
 using Org.BouncyCastle.Security;
@@ -231,14 +232,14 @@ namespace BlockM3.AEternity.SDK
             return _compilerClient.DecodeDataAsync(body, token);
         }
 
-        public Task<SophiaCallResult> DecodeCallResultAsync(string sourceCode, string function, string callResult, string callValue, CancellationToken token = default(CancellationToken))
+        public Task<JToken> DecodeCallResultAsync(string sourceCode, string function, string callResult, string callValue, CancellationToken token = default(CancellationToken))
         {
             SophiaCallResultInput body = new SophiaCallResultInput();
             body.Source = sourceCode;
             body.Function = function;
             body.CallResult = callResult;
             body.CallValue = callValue;
-            return _compilerClient.DecodeCallResultAsync(body, token);
+            return _compilerClient.DecodeCallResultFixedAsync(body, token);
         }
 
 

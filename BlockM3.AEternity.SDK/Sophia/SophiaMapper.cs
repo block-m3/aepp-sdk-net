@@ -491,7 +491,7 @@ namespace BlockM3.AEternity.SDK.Sophia
 
             if (entry.StartsWith("list"))
             {
-                string n = entry.Substring(3).Trim();
+                string n = entry.Substring(4).Trim();
                 if (n.StartsWith("(") && n.EndsWith(")"))
                     n = n.Substring(1, n.Length - 2);
                 if (n.Length != 0)

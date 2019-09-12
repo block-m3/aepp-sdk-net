@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using System.Threading;
@@ -54,12 +55,12 @@ namespace BlockM3.AEternity.SDK.ClientModels
             if (obj != null && !string.IsNullOrEmpty(obj.ReturnType))
             {
                 Function f = c.Functions.First(a => a.Name == function);
-                JObject ret = null;
+                JToken ret = null;
                 if (obj.ReturnValue != "cb_Xfbg4g==")
-                    ret = (await account.Client.DecodeDataAsync(obj.ReturnValue, f.OutputType.MapName, token).ConfigureAwait(false)).Data as JObject;
+                    ret = await account.Client.DecodeCallResultAsync(c.SourceCode, function, obj.ReturnType, obj.ReturnValue, token).ConfigureAwait(false);
                 if (ret == null)
                     return new ContractReturn<T>(obj, txinfo, default(T), c);
-                return new ContractReturn<T>(obj, txinfo, f.OutputType.Deserialize<T>(ret.Value<string>("value")), c);
+                return new ContractReturn<T>(obj, txinfo, f.OutputType.Deserialize<T>(ret.ToString()), c);
             }
 
             return new ContractReturn<T>(obj, txinfo, default(T), c);

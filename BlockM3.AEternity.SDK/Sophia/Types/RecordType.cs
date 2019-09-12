@@ -54,11 +54,8 @@ namespace BlockM3.AEternity.SDK.Sophia.Types
 
         public override object Deserialize(string value, Type t)
         {
-            SophiaRecordAttribute rec = t.GetCustomAttribute<SophiaRecordAttribute>();
             if (!t.IsClass)
                 throw new ArgumentException("Record can be only classes");
-            if (rec == null)
-                throw new ArgumentException("Record classes should have the SophiaRecord Attribute");
             value = value.Trim();
             int idx = value.IndexOf('{');
             if (idx > -1)

@@ -11,6 +11,7 @@ using BlockM3.AEternity.SDK.Progress;
 using BlockM3.AEternity.SDK.Security.KeyPairs;
 using BlockM3.AEternity.SDK.Transactions;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json.Linq;
 using Account = BlockM3.AEternity.SDK.Generated.Models.Account;
 using Contract = BlockM3.AEternity.SDK.ClientModels.Contract;
 using Type = BlockM3.AEternity.SDK.Generated.Models.Type;
@@ -42,7 +43,7 @@ namespace BlockM3.AEternity.SDK.Extensions
         public static Calldata EncodeCallData(this FlatClient client, string sourceCode, string function, List<string> arguments) => client.EncodeCallDataAsync(sourceCode, function, arguments).RunAndUnwrap();
         public static Calldata EncodeCallData(this FlatClient client, string sourceCode, string function, params string[] arguments) => client.EncodeCallDataAsync(sourceCode, function, arguments).RunAndUnwrap();
         public static SophiaJsonData DecodeCallData(this FlatClient client, string calldata, string sophiaType) => client.DecodeDataAsync(calldata, sophiaType).RunAndUnwrap();
-        public static SophiaCallResult DecodeCallResult(this FlatClient client, string sourceCode, string function, string callResult, string callValue) => client.DecodeCallResultAsync(sourceCode, function, callResult, callValue).RunAndUnwrap();
+        public static JToken DecodeCallResult(this FlatClient client, string sourceCode, string function, string callResult, string callValue) => client.DecodeCallResultAsync(sourceCode, function, callResult, callValue).RunAndUnwrap();
         public static DecodedCalldata DecodeCallDataWithByteCode(this FlatClient client, string calldata, string byteCode) => client.DecodeCallDataWithByteCodeAsync(calldata, byteCode).RunAndUnwrap();
         public static DecodedCalldata DecodeCallDataWithSource(this FlatClient client, string calldata, string sourceCode) => client.DecodeCallDataWithSourceAsync(calldata, sourceCode).RunAndUnwrap();
         public static CompilerVersion GetCompilerVersion(this FlatClient client) => client.GetCompilerVersionAsync().RunAndUnwrap();
