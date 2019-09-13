@@ -54,6 +54,8 @@ namespace BlockM3.AEternity.SDK.Sophia.Types
 
         public override object Deserialize(string value, Type t)
         {
+            if (value.StartsWith("\"") && value.EndsWith("\""))
+                value = value.Substring(1, value.Length - 2);
             SophiaEventAttribute rec = t.GetCustomAttribute<SophiaEventAttribute>();
             if (!t.IsClass)
                 throw new ArgumentException("Events can be only classes");

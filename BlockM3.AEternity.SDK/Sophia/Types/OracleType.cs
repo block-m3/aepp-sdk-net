@@ -17,6 +17,8 @@ namespace BlockM3.AEternity.SDK.Sophia.Types
         {
             if (o is string s)
             {
+                if (s.StartsWith("\"") && s.EndsWith("\""))
+                    s = s.Substring(1, s.Length - 2);
                 if (!s.StartsWith(Constants.ApiIdentifiers.ORACLE_PUBKEY + "_"))
                     throw new ArgumentException($"Invalid oracle, all oracles should start with '{Constants.ApiIdentifiers.ORACLE_PUBKEY}' value: '{s}'");
                 return s;
@@ -27,6 +29,8 @@ namespace BlockM3.AEternity.SDK.Sophia.Types
 
         public override object Deserialize(string value, Type t)
         {
+            if (value.StartsWith("\"") && value.EndsWith("\""))
+                value = value.Substring(1, value.Length - 2);
             if (typeof(string) == t)
             {
                 if (!value.StartsWith(Constants.ApiIdentifiers.ORACLE_PUBKEY + "_"))

@@ -35,7 +35,7 @@ namespace BlockM3.AEternity.SDK.Transactions.NameService
         }
 
 
-        protected override byte[] Serialize()
+        public override byte[] Serialize()
         {
             RLPEncoder enc = new RLPEncoder();
             enc.AddInt(Constants.SerializationTags.OBJECT_TAG_NAME_SERVICE_TRANSFER_TRANSACTION);

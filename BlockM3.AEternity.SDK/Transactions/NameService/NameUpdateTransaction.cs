@@ -34,7 +34,7 @@ namespace BlockM3.AEternity.SDK.Transactions.NameService
                 throw new InvalidParameterException($"Invalid Parameter NameId: {Validation.MissingApiIdentifier(Constants.ApiIdentifiers.NAME)}");
         }
 
-        protected override byte[] Serialize()
+        public override byte[] Serialize()
         {
             RLPEncoder enc = new RLPEncoder();
             enc.AddInt(Constants.SerializationTags.OBJECT_TAG_NAME_SERVICE_UPDATE_TRANSACTION);

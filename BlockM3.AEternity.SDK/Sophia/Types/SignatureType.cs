@@ -28,6 +28,9 @@ namespace BlockM3.AEternity.SDK.Sophia.Types
         {
             if (typeof(byte[]) == t)
             {
+                if (value.StartsWith("\"") && value.EndsWith("\""))
+                    value = value.Substring(1, value.Length - 2);
+
                 if (!value.StartsWith("#"))
                     throw new ArgumentException($"Invalid byte array, return sophia type should start with #");
                 byte[] d = Hex.Decode(value.Substring(1));

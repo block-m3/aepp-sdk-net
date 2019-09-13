@@ -21,8 +21,12 @@ namespace BlockM3.AEternity.SDK.Sophia.Types
         {
             if (o is byte[] data)
             {
-                if (data.Length != 64)
-                    throw new ArgumentException($"Invalid signature, signature length should be 32 bytes, current length is {data.Length}");
+                if (_length.HasValue)
+                {
+                    if (data.Length != _length)
+                        throw new ArgumentException($"Invalid signature, signature length should be 32 bytes, current length is {data.Length}");
+                }
+
                 return "#" + Hex.ToHexString(data);
             }
 

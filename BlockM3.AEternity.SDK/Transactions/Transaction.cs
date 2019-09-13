@@ -43,7 +43,7 @@ namespace BlockM3.AEternity.SDK.Transactions
          *
          * @return {@link Bytes}
          */
-        protected abstract byte[] Serialize();
+        public abstract byte[] Serialize();
 
         /**
          * this method needs to be implemented for testing purposes (non native mode)

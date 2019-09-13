@@ -25,7 +25,7 @@ namespace BlockM3.AEternity.SDK.Transactions.Oracles
         }
 
 
-        protected override byte[] Serialize()
+        public override byte[] Serialize()
         {
             RLPEncoder enc = new RLPEncoder();
             enc.AddInt(Constants.SerializationTags.OBJECT_TAG_ORACLE_RESPONSE_TRANSACTION);

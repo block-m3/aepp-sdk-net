@@ -4,6 +4,7 @@ using System.Linq;
 using System.Numerics;
 using System.Threading;
 using System.Threading.Tasks;
+using BlockM3.AEternity.SDK.Exceptions;
 using BlockM3.AEternity.SDK.Generated.Models;
 using BlockM3.AEternity.SDK.Sophia;
 using Newtonsoft.Json.Linq;
@@ -39,6 +40,44 @@ namespace BlockM3.AEternity.SDK.ClientModels
         public List<Models.Event> Events { get; }
 
         public string TXInfo { get; }
+
+        internal class AbortCls
+        {
+            public string abort { get; set; }
+        }
+
+        internal static async Task<JToken> InternalCreateAsync(Account account, Contract c, string function, ContractCallObject obj, CancellationToken token)
+        {
+            if (obj != null && !string.IsNullOrEmpty(obj.ReturnType))
+            {
+                Function f = c.Functions.First(a => a.Name == function);
+                JToken ret = null;
+                if (obj.ReturnValue != "cb_Xfbg4g==")
+                    ret = await account.Client.DecodeCallResultAsync(c.SourceCode, function, obj.ReturnType, obj.ReturnValue, token).ConfigureAwait(false);
+                switch (obj.ReturnType)
+                {
+                    case "revert":
+                        if (ret != null && ret.Value<JArray>("abort") != null)
+                            throw new CallRevertException(ret.Value<JArray>("abort")[0].ToString());
+                        throw new CallRevertException("Unknown Error");
+                    case "error":
+                        if (ret != null && ret.Value<JArray>("error") != null)
+                            throw new CallErrorException(ret.Value<JArray>("error")[0].ToString());
+                        throw new CallErrorException("Unknown Error");
+                    default:
+                        return ret;
+                }
+            }
+            return null;
+        }
+
+        internal static async Task<ContractReturn> CreateAsync(Account account, Contract c, string function, ContractCallObject obj, string txinfo, CancellationToken token)
+        {
+            if (obj != null && !string.IsNullOrEmpty(obj.ReturnType))
+                await InternalCreateAsync(account, c, function, obj, token).ConfigureAwait(false);
+            return new ContractReturn(obj, txinfo, c);
+        }
+
     }
 
     public class ContractReturn<T> : ContractReturn
@@ -50,17 +89,15 @@ namespace BlockM3.AEternity.SDK.ClientModels
 
         public T ReturnValue { get; }
 
-        internal static async Task<ContractReturn<T>> CreateAsync(Account account, Contract c, string function, ContractCallObject obj, string txinfo, CancellationToken token)
+        internal new static async Task<ContractReturn<T>> CreateAsync(Account account, Contract c, string function, ContractCallObject obj, string txinfo, CancellationToken token)
         {
+
             if (obj != null && !string.IsNullOrEmpty(obj.ReturnType))
             {
+                JToken ret = await InternalCreateAsync(account, c, function, obj, token).ConfigureAwait(false);
                 Function f = c.Functions.First(a => a.Name == function);
-                JToken ret = null;
-                if (obj.ReturnValue != "cb_Xfbg4g==")
-                    ret = await account.Client.DecodeCallResultAsync(c.SourceCode, function, obj.ReturnType, obj.ReturnValue, token).ConfigureAwait(false);
-                if (ret == null)
-                    return new ContractReturn<T>(obj, txinfo, default(T), c);
-                return new ContractReturn<T>(obj, txinfo, f.OutputType.Deserialize<T>(ret.ToString()), c);
+                if (ret != null)
+                    return new ContractReturn<T>(obj, txinfo, f.OutputType.Deserialize<T>(ret.ToString()), c);
             }
 
             return new ContractReturn<T>(obj, txinfo, default(T), c);

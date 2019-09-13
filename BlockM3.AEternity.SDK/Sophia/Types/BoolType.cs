@@ -26,6 +26,8 @@ namespace BlockM3.AEternity.SDK.Sophia.Types
         {
             if (typeof(bool) == t)
             {
+                if (value.StartsWith("\"") && value.EndsWith("\""))
+                    value = value.Substring(1, value.Length - 2);
                 return bool.Parse(value);
             }
 

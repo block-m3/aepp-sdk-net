@@ -24,7 +24,7 @@ namespace BlockM3.AEternity.SDK.Transactions.Oracles
             return _client.CreateDebugOracleExtendAsync(Model, token);
         }
 
-        protected override byte[] Serialize()
+        public override byte[] Serialize()
         {
             RLPEncoder enc = new RLPEncoder();
             enc.AddInt(Constants.SerializationTags.OBJECT_TAG_ORACLE_EXTEND_TRANSACTION);

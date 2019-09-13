@@ -8,6 +8,12 @@ namespace BlockM3.AEternity.SDK.Progress
 {
     public class GetContractReturn : ITransactionProgress
     {
+        private readonly string _function;
+
+        public GetContractReturn(string function)
+        {
+            _function = function;
+        }
         public string TXHash => null;
 
         public async Task<(object result, bool done)> CheckForFinishAsync(object input, CancellationToken token = default(CancellationToken))
@@ -16,7 +22,7 @@ namespace BlockM3.AEternity.SDK.Progress
             TxInfoObject res = await co.Account.Client.GetTransactionInfoByHashAsync(co.TxHash, token).ConfigureAwait(false);
             if (string.IsNullOrEmpty(co.ContractId) && !string.IsNullOrEmpty(res.CallInfo?.ContractId))
                 co.ContractId = res.CallInfo?.ContractId;
-            return (new ContractReturn(res.CallInfo, res.TXInfo, co), true);
+            return (await ContractReturn.CreateAsync(co.Account, co, _function, res.CallInfo, res.TXInfo, token).ConfigureAwait(false), true);
         }
     }
 

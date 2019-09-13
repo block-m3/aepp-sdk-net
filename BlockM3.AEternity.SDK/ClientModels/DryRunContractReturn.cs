@@ -21,6 +21,14 @@ namespace BlockM3.AEternity.SDK.ClientModels
         public string Result { get; set; }
 
         public string Reason { get; set; }
+
+        
+        internal static async Task<DryRunContractReturn> CreateAsync(Account account, Contract c, string function, DryRunResult obj, CancellationToken token)
+        {
+            if (obj != null && obj.CallObj!=null && !string.IsNullOrEmpty(obj.CallObj.ReturnType))
+                await InternalCreateAsync(account, c, function, obj.CallObj, token).ConfigureAwait(false);
+            return new DryRunContractReturn(obj, c);
+        }
     }
 
     public class DryRunContractReturn<T> : DryRunContractReturn
@@ -32,18 +40,18 @@ namespace BlockM3.AEternity.SDK.ClientModels
 
         public T ReturnValue { get; }
 
-        internal static async Task<DryRunContractReturn<T>> CreateAsync(Account account, Contract c, string function, DryRunResult obj, CancellationToken token)
+        internal new static async Task<DryRunContractReturn<T>> CreateAsync(Account account, Contract c, string function, DryRunResult obj, CancellationToken token)
         {
-            if (obj != null && !string.IsNullOrEmpty(obj.CallObj?.ReturnType))
-            {
-                JObject ret = (await account.Client.DecodeDataAsync(obj.CallObj.ReturnValue, obj.CallObj.ReturnType, token).ConfigureAwait(false)).Data as JObject;
-                if (ret == null)
-                    return new DryRunContractReturn<T>(obj, default(T), c);
-                Function f = c.Functions.First(a => a.Name == function);
-                return new DryRunContractReturn<T>(obj, f.OutputType.Deserialize<T>(ret.Value<string>("value")), c);
-            }
 
+            if (obj != null && obj.CallObj!=null && !string.IsNullOrEmpty(obj.CallObj.ReturnType))
+            {
+                JToken ret = await InternalCreateAsync(account, c, function, obj.CallObj, token).ConfigureAwait(false);
+                Function f = c.Functions.First(a => a.Name == function);
+                if (ret != null)
+                    return new DryRunContractReturn<T>(obj, f.OutputType.Deserialize<T>(ret.ToString()), c);
+            }
             return new DryRunContractReturn<T>(obj, default(T), c);
         }
+
     }
 }

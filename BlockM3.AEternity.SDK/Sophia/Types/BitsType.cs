@@ -27,6 +27,8 @@ namespace BlockM3.AEternity.SDK.Sophia.Types
 
         public override object Deserialize(string value, Type t)
         {
+            if (value.StartsWith("\"") && value.EndsWith("\""))
+                value = value.Substring(1, value.Length - 2);
             if (value.ToLowerInvariant() == "bits.none")
                 return new BigInteger(0);
             if (value.ToLowerInvariant() == "bits.all")

@@ -16,7 +16,7 @@ namespace BlockM3.AEternity.SDK.ClientModels
             Account = account;
         }
 
-        public Account Account { get; }
+        public Account Account { get; private set; }
         public GenericSignedTx Tx { get; set; }
         public string TxHash { get; set; }
 

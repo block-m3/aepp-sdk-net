@@ -35,8 +35,11 @@ namespace BlockM3.AEternity.SDK.Sophia.Types
         {
             if (t == typeof(Ttl))
             {
+
                 if (value == null)
                     value = "Empty";
+                if (value.StartsWith("\"") && value.EndsWith("\""))
+                    value = value.Substring(1, value.Length - 2);
                 if (!value.StartsWith("fixedttl") && !value.StartsWith("relativettl"))
                     throw new ArgumentException($"Expecting FixedTtl or RelativeTtl, Obtained {value}");
                 Match m = numReg.Match(value);

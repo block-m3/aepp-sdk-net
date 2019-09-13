@@ -29,7 +29,7 @@ namespace BlockM3.AEternity.SDK.Transactions.Contracts
             return _client.CreateDebugContractCreateAsync(Model, token);
         }
 
-        protected override byte[] Serialize()
+        public override byte[] Serialize()
         {
             RLPEncoder enc = new RLPEncoder();
             enc.AddInt(Constants.SerializationTags.OBJECT_TAG_CONTRACT_CREATE_TRANSACTION);
@@ -47,7 +47,13 @@ namespace BlockM3.AEternity.SDK.Transactions.Contracts
             enc.AddByteArray(Encoding.DecodeCheckWithIdentifier(Model.CallData));
             return enc.Encode();
         }
-
+        public override async Task<CreateContractUnsignedTx> CreateUnsignedTransactionAsync(bool nativeMode, long minimalGasPrice, CancellationToken token = default(CancellationToken))
+        {
+            CreateContractUnsignedTx tx = await base.CreateUnsignedTransactionAsync(nativeMode, minimalGasPrice, token);
+            if (nativeMode)
+                tx.ContractId = Encoding.EncodeContractId(Model.OwnerId, Model.Nonce ?? 0);
+            return tx;
+        }
         private BigInteger CalculateVersion()
         {
             try

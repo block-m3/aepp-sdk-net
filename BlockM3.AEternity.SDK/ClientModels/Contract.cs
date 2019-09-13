@@ -68,11 +68,25 @@ namespace BlockM3.AEternity.SDK.ClientModels
             }
         }
 
+        public Contract CloneWithOtherAccount(Account ac)
+        {
+            Contract c=new Contract(ac);
+            c.ContractId = ContractId;
+            c.SourceCode = SourceCode;
+            c.ByteCode = ByteCode;
+            c.ACI = ACI;
+            c.Interface = Interface;
+            c.AbiVersion = AbiVersion;
+            c.VmVersion = VmVersion;
+            c.Tx = Tx;
+            c.TxHash = TxHash;
+            return c;
+        }
 
         public async Task<DryRunContractReturn> MeasureDeployAsync(BigInteger amount, BigInteger deposit, ulong gasPrice = Constants.BaseConstants.MINIMAL_GAS_PRICE, string constructorFunction = "init", CancellationToken token = default(CancellationToken), params object[] constructorpars)
         {
             DryRunResult res = await MeasureDeployInternalAsync(amount, deposit, gasPrice, constructorFunction, constructorpars, token).ConfigureAwait(false);
-            return new DryRunContractReturn(res, this);
+            return await DryRunContractReturn.CreateAsync(Account, this, constructorFunction, res, token).ConfigureAwait(false);
         }
 
         public async Task<DryRunContractReturn<T>> MeasureDeployAsync<T>(BigInteger amount, BigInteger deposit, ulong gasPrice = Constants.BaseConstants.MINIMAL_GAS_PRICE, string constructorFunction = "init", CancellationToken token = default(CancellationToken), params object[] constructorpars)
@@ -84,7 +98,7 @@ namespace BlockM3.AEternity.SDK.ClientModels
         public async Task<DryRunContractReturn> MeasureCallAsync(string function, ulong gasPrice = Constants.BaseConstants.MINIMAL_GAS_PRICE, ulong amount = 0, CancellationToken token = default(CancellationToken), params object[] pars)
         {
             DryRunResult res = await MeasureCallInternalAsync(true, gasPrice, function, amount, pars, token).ConfigureAwait(false);
-            return new DryRunContractReturn(res, this);
+            return  await DryRunContractReturn.CreateAsync(Account, this, function, res, token).ConfigureAwait(false);
         }
 
         public async Task<DryRunContractReturn<T>> MeasureCallAsync<T>(string function, ulong gasPrice = Constants.BaseConstants.MINIMAL_GAS_PRICE, ulong amount = 0, CancellationToken token = default(CancellationToken), params object[] pars)
@@ -96,7 +110,7 @@ namespace BlockM3.AEternity.SDK.ClientModels
         public async Task<ContractReturn> StaticCallAsync(string function, ulong amount = 0, CancellationToken token = default(CancellationToken), params object[] pars)
         {
             DryRunResult res = await MeasureCallInternalAsync(false, Constants.BaseConstants.MINIMAL_GAS_PRICE, function, amount, pars, token).ConfigureAwait(false);
-            return new ContractReturn(res.CallObj, null, this);
+            return await ContractReturn.CreateAsync(Account, this, function, res.CallObj, null, token).ConfigureAwait(false);
         }
 
         public async Task<ContractReturn<T>> StaticCallAsync<T>(string function, ulong amount = 0, CancellationToken token = default(CancellationToken), params object[] pars)
@@ -109,7 +123,7 @@ namespace BlockM3.AEternity.SDK.ClientModels
         public async Task<InProgress<ContractReturn>> DeployAsync(BigInteger amount, BigInteger deposit, ulong gasPrice = Constants.BaseConstants.MINIMAL_GAS_PRICE, ulong gas = Constants.BaseConstants.CONTRACT_GAS, string constructorFunction = "init", CancellationToken token = default(CancellationToken), params object[] pars)
         {
             await DeployAsyncInternal(amount, deposit, gasPrice, gas, constructorFunction, token, pars).ConfigureAwait(false);
-            return new InProgress<ContractReturn>(new WaitForHash(this), new GetContractReturn());
+            return new InProgress<ContractReturn>(new WaitForHash(this), new GetContractReturn(constructorFunction));
         }
 
         public async Task<InProgress<ContractReturn<T>>> DeployAsync<T>(BigInteger amount, BigInteger deposit, ulong gasPrice = Constants.BaseConstants.MINIMAL_GAS_PRICE, ulong gas = Constants.BaseConstants.CONTRACT_GAS, string constructorFunction = "init", CancellationToken token = default(CancellationToken), params object[] pars)
@@ -122,7 +136,7 @@ namespace BlockM3.AEternity.SDK.ClientModels
         {
             DryRunContractReturn dry = await MeasureDeployAsync(amount, deposit, gasPrice, constructorFunction, token, pars).ConfigureAwait(false);
             await DeployAsyncInternal(amount, deposit, (ulong) dry.GasPrice, dry.GasUsed, constructorFunction, token, pars).ConfigureAwait(false);
-            return new InProgress<ContractReturn>(new WaitForHash(this), new GetContractReturn());
+            return new InProgress<ContractReturn>(new WaitForHash(this), new GetContractReturn(constructorFunction));
         }
 
         public async Task<InProgress<ContractReturn<T>>> MeasureAndDeployAsync<T>(BigInteger amount, BigInteger deposit, ulong gasPrice = Constants.BaseConstants.MINIMAL_GAS_PRICE, string constructorFunction = "init", CancellationToken token = default(CancellationToken), params object[] pars)
@@ -137,7 +151,7 @@ namespace BlockM3.AEternity.SDK.ClientModels
         {
             DryRunContractReturn dry = await MeasureCallAsync(function, gasPrice, amount, token, pars).ConfigureAwait(false);
             await CallAsyncInternal((ulong) dry.GasPrice, dry.GasUsed, function, amount, token, pars).ConfigureAwait(false);
-            return new InProgress<ContractReturn>(new WaitForHash(this), new GetContractReturn());
+            return new InProgress<ContractReturn>(new WaitForHash(this), new GetContractReturn(function));
         }
 
         public async Task<InProgress<ContractReturn<T>>> MeasureAndCallAsync<T>(string function, ulong gasPrice = Constants.BaseConstants.MINIMAL_GAS_PRICE, ulong amount = 0, CancellationToken token = default(CancellationToken), params object[] pars)
@@ -151,7 +165,7 @@ namespace BlockM3.AEternity.SDK.ClientModels
         public async Task<InProgress<ContractReturn>> CallAsync(string function, ulong gasPrice = Constants.BaseConstants.MINIMAL_GAS_PRICE, ulong gas = Constants.BaseConstants.CONTRACT_GAS, ulong amount = 0, CancellationToken token = default(CancellationToken), params object[] pars)
         {
             await CallAsyncInternal(gasPrice, gas, function, amount, token, pars).ConfigureAwait(false);
-            return new InProgress<ContractReturn>(new WaitForHash(this), new GetContractReturn());
+            return new InProgress<ContractReturn>(new WaitForHash(this), new GetContractReturn(function));
         }
 
         public async Task<InProgress<ContractReturn<T>>> CallAsync<T>(string function, ulong gasPrice = Constants.BaseConstants.MINIMAL_GAS_PRICE, ulong gas = Constants.BaseConstants.CONTRACT_GAS, ulong amount = 0, CancellationToken token = default(CancellationToken), params object[] pars)
@@ -165,9 +179,9 @@ namespace BlockM3.AEternity.SDK.ClientModels
             return new InProgress<ContractReturn<T>>(new WaitForHash(this), new GetContractReturn<T>(function));
         }
 
-        public InProgress<ContractReturn> CreateContractReturnInProgressFromTx(string txhash)
+        public InProgress<ContractReturn> CreateContractReturnInProgressFromTx(string txhash, string function)
         {
-            return new InProgress<ContractReturn>(new WaitForHash(this), new GetContractReturn());
+            return new InProgress<ContractReturn>(new WaitForHash(this), new GetContractReturn(function));
         }
 
         private async Task<DryRunResult> MeasureDeployInternalAsync(BigInteger amount, BigInteger deposit, ulong gasPrice, string constructorFunction, object[] pars, CancellationToken token)
@@ -179,7 +193,14 @@ namespace BlockM3.AEternity.SDK.ClientModels
             List<Dictionary<AccountParameter, object>> dict = new List<Dictionary<AccountParameter, object>>();
             dict.Add(new Dictionary<AccountParameter, object> {{AccountParameter.PUBLIC_KEY, Account.KeyPair.PublicKey}});
             DryRunResults res = await Account.Client.DryRunTransactionsAsync(dict, null, new List<UnsignedTx> {tx}, token).ConfigureAwait(false);
-            return res.Results.First();
+            DryRunResult r=res.Results.First();
+            if (r.Reason!=null && r.Reason.Contains("account_nonce_too_low"))
+            {
+                await Account.RefreshAsync(token);
+                res = await Account.Client.DryRunTransactionsAsync(dict, null, new List<UnsignedTx> {tx}, token).ConfigureAwait(false);
+                r=res.Results.First();
+            }
+            return r;
         }
 
         private async Task<DryRunResult> MeasureCallInternalAsync(bool stateful, ulong gasPrice, string function, ulong amount, object[] pars, CancellationToken token)
@@ -187,13 +208,19 @@ namespace BlockM3.AEternity.SDK.ClientModels
             Account.ValidatePublicKey();
             ValidateContract();
             string calldata = await EncodeCallDataAsync(function, pars, stateful, token).ConfigureAwait(false);
-            ContractCallTransaction ts = Account.Client.CreateContractCallTransaction(AbiVersion, calldata, ContractId, 10000000, gasPrice, Account.Nonce + 1, Account.KeyPair.PublicKey, Account.Ttl);
-            ts.Model.Amount = amount;
+            ContractCallTransaction ts = Account.Client.CreateContractCallTransaction(AbiVersion, calldata, ContractId, 1000000, gasPrice, Account.Nonce + 1, Account.KeyPair.PublicKey, Account.Ttl);
             UnsignedTx tx = await ts.CreateUnsignedTransactionAsync(token).ConfigureAwait(false);
             List<Dictionary<AccountParameter, object>> dict = new List<Dictionary<AccountParameter, object>>();
             dict.Add(new Dictionary<AccountParameter, object> {{AccountParameter.PUBLIC_KEY, Account.KeyPair.PublicKey}});
             DryRunResults res = await Account.Client.DryRunTransactionsAsync(dict, null, new List<UnsignedTx> {tx}, token).ConfigureAwait(false);
-            return res.Results.First();
+            DryRunResult r=res.Results.First();
+            if (r.Reason!=null && r.Reason.Contains("account_nonce_too_low"))
+            {
+                await Account.RefreshAsync(token);
+                res = await Account.Client.DryRunTransactionsAsync(dict, null, new List<UnsignedTx> {tx}, token).ConfigureAwait(false);
+                r=res.Results.First();
+            }
+            return r;
         }
 
         private void ValidateContract()

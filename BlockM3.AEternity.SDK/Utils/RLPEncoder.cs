@@ -40,7 +40,7 @@ namespace BlockM3.AEternity.SDK.Utils
             acc.Add(RLP.EncodeList(list.acc.ToArray()));
         }
 
-        private static byte[] CheckZeroAndWriteValue(BigInteger? value)
+        public static byte[] CheckZeroAndWriteValue(BigInteger? value)
         {
             if (!value.HasValue || value == 0)
                 return new byte[] {0};

@@ -339,6 +339,12 @@ namespace BlockM3.AEternity.SDK.Utils
             return EncodeCheck(enc.Encode(), Constants.ApiIdentifiers.TRANSACTION);
         }
 
+
+        public static string EncodeContractId(string publickey, ulong nonce)
+        {
+            return HashEncode(DecodeCheckWithIdentifier(publickey).Concatenate(RLPEncoder.CheckZeroAndWriteValue(nonce)), Constants.ApiIdentifiers.CONTRACT_PUBKEY);
+
+        }
         public static string EncodeQueryId(string publickey, string oracleid, ulong nonce)
         {
             return HashEncode(DecodeCheckWithIdentifier(publickey).Concatenate(BigIntegerToBytes(nonce), DecodeCheckWithIdentifier(oracleid)), Constants.ApiIdentifiers.ORACLE_QUERY_ID);
