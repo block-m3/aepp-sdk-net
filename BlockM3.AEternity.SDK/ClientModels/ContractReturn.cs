@@ -46,7 +46,7 @@ namespace BlockM3.AEternity.SDK.ClientModels
             public string abort { get; set; }
         }
 
-        internal static async Task<JToken> InternalCreateAsync(Account account, Contract c, string function, ContractCallObject obj, CancellationToken token)
+        public static async Task<JToken> DeserializeAsync(Account account, Contract c, string function, ContractCallObject obj, CancellationToken token)
         {
             if (obj != null && !string.IsNullOrEmpty(obj.ReturnType))
             {
@@ -74,7 +74,7 @@ namespace BlockM3.AEternity.SDK.ClientModels
         internal static async Task<ContractReturn> CreateAsync(Account account, Contract c, string function, ContractCallObject obj, string txinfo, CancellationToken token)
         {
             if (obj != null && !string.IsNullOrEmpty(obj.ReturnType))
-                await InternalCreateAsync(account, c, function, obj, token).ConfigureAwait(false);
+                await DeserializeAsync(account, c, function, obj, token).ConfigureAwait(false);
             return new ContractReturn(obj, txinfo, c);
         }
 
@@ -94,7 +94,7 @@ namespace BlockM3.AEternity.SDK.ClientModels
 
             if (obj != null && !string.IsNullOrEmpty(obj.ReturnType))
             {
-                JToken ret = await InternalCreateAsync(account, c, function, obj, token).ConfigureAwait(false);
+                JToken ret = await DeserializeAsync(account, c, function, obj, token).ConfigureAwait(false);
                 Function f = c.Functions.First(a => a.Name == function);
                 if (ret != null)
                     return new ContractReturn<T>(obj, txinfo, f.OutputType.Deserialize<T>(ret.ToString()), c);

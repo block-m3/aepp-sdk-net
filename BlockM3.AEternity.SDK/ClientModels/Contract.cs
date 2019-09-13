@@ -86,7 +86,7 @@ namespace BlockM3.AEternity.SDK.ClientModels
         public async Task<DryRunContractReturn> MeasureDeployAsync(BigInteger amount, BigInteger deposit, ulong gasPrice = Constants.BaseConstants.MINIMAL_GAS_PRICE, string constructorFunction = "init", CancellationToken token = default(CancellationToken), params object[] constructorpars)
         {
             DryRunResult res = await MeasureDeployInternalAsync(amount, deposit, gasPrice, constructorFunction, constructorpars, token).ConfigureAwait(false);
-            return await DryRunContractReturn.CreateAsync(Account, this, constructorFunction, res, token).ConfigureAwait(false);
+            return await DryRunContractReturn.DeserializeAsync(Account, this, constructorFunction, res, token).ConfigureAwait(false);
         }
 
         public async Task<DryRunContractReturn<T>> MeasureDeployAsync<T>(BigInteger amount, BigInteger deposit, ulong gasPrice = Constants.BaseConstants.MINIMAL_GAS_PRICE, string constructorFunction = "init", CancellationToken token = default(CancellationToken), params object[] constructorpars)
@@ -98,7 +98,7 @@ namespace BlockM3.AEternity.SDK.ClientModels
         public async Task<DryRunContractReturn> MeasureCallAsync(string function, ulong gasPrice = Constants.BaseConstants.MINIMAL_GAS_PRICE, ulong amount = 0, CancellationToken token = default(CancellationToken), params object[] pars)
         {
             DryRunResult res = await MeasureCallInternalAsync(true, gasPrice, function, amount, pars, token).ConfigureAwait(false);
-            return  await DryRunContractReturn.CreateAsync(Account, this, function, res, token).ConfigureAwait(false);
+            return  await DryRunContractReturn.DeserializeAsync(Account, this, function, res, token).ConfigureAwait(false);
         }
 
         public async Task<DryRunContractReturn<T>> MeasureCallAsync<T>(string function, ulong gasPrice = Constants.BaseConstants.MINIMAL_GAS_PRICE, ulong amount = 0, CancellationToken token = default(CancellationToken), params object[] pars)

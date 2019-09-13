@@ -31,7 +31,7 @@ namespace BlockM3.AEternity.SDK.Sophia
     
 
         public static string[] SplitByComma(string input) => SplitBy(input, ',', ('(', ')'), ('[', ']'), ('{', '}'), ('"', '"')).ToArray();
-        public static string[] SplitByTwoPoints(string input) => SplitBy(input, ':', ('"', '"')).ToArray();
+        public static string[] SplitByTwoPoints(string input) => SplitBy(input, ':', ('(', ')'), ('[', ']'), ('{', '}'), ('"', '"')).ToArray();
         public static string[] SplitByPipe(string input) => SplitBy(input, '|', ('(', ')'), ('[', ']'), ('{', '}'), ('"', '"')).ToArray();
 
         public static List<string> SplitBy(string input, char separator, params (char start, char end)[] pars)
