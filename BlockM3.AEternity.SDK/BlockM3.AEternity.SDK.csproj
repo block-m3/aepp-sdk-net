@@ -2,6 +2,20 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageId>aepp-sdk-net</PackageId>
+    <Authors>Máximo Piva</Authors>
+    <Company>Block M3</Company>
+    <Product>aepp-sdk-net</Product>
+    <Description>.NET SDK to interact with the Æternity blockchain</Description>
+    <Copyright>Copyright (c) 2019, Block M3 &amp; aeternity developers</Copyright>
+    <PackageProjectUrl>https://github.com/block-m3/aepp-sdk-net</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/block-m3/aepp-sdk-net</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>aeternity blockchain sdk-net netstandard20</PackageTags>
+    <PackageReleaseNotes>First Version</PackageReleaseNotes>
+    <PackageLicenseExpression></PackageLicenseExpression>
+    <PackageLicenseFile>license.txt</PackageLicenseFile>
   </PropertyGroup>
 
 
@@ -19,6 +33,14 @@
     <PackageReference Include="Sodium.Core" Version="1.2.0" />
     <PackageReference Include="System.ComponentModel.Annotations" Version="4.5.0" />
     <PackageReference Include="System.Reactive" Version="4.1.6" />
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <None Include="..\license.txt">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
   </ItemGroup>
 
 
