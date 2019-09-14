@@ -117,6 +117,9 @@ namespace BlockM3.AEternity.SDK
             // the default testnet contract url
             public const string DEFAULT_TESTNET_CONTRACT_URL = "https://compiler.aepps.com";
 
+            public const string DEFAULT_TESTNET_WS = "ws:sdk-testnet.aepps.com:3014";
+
+
             public const ushort VM_FORTUNA = 4;
             public const ushort VM_LIMA = 5;
 

@@ -1,8 +1,12 @@
 using System;
 using System.Net.Http;
+using System.Net.WebSockets;
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
+using StreamJsonRpc;
 
 namespace BlockM3.AEternity.SDK
 {
@@ -29,15 +33,20 @@ namespace BlockM3.AEternity.SDK
             _logger = loggerFactory?.CreateLogger<Configuration>();
             if (_logger == null)
                 throw new ArgumentException("Unable to Create logger");
+            IConfiguration ncfg = cfg?.GetSection("aeternity");
+            if (ncfg != null)
+                cfg = ncfg;
             if (cfg != null)
             {
                 BaseUrl = cfg.GetValue("baseUrl", Constants.BaseConstants.DEFAULT_TESTNET_URL);
                 ContractBaseUrl = cfg.GetValue("contractBaseUrl", Constants.BaseConstants.DEFAULT_TESTNET_CONTRACT_URL);
+                WebSocketUrl = cfg.GetValue("webSocketUrl", Constants.BaseConstants.DEFAULT_TESTNET_WS);
             }
             else
             {
                 BaseUrl = Constants.BaseConstants.DEFAULT_TESTNET_URL;
                 ContractBaseUrl = Constants.BaseConstants.DEFAULT_TESTNET_CONTRACT_URL;
+                WebSocketUrl = Constants.BaseConstants.DEFAULT_TESTNET_WS;
             }
 
             IConfigurationSection sec = cfg?.GetSection("wallet");
@@ -96,7 +105,7 @@ namespace BlockM3.AEternity.SDK
         //Endpoints
         public string BaseUrl { get; set; }
         public string ContractBaseUrl { get; set; }
-
+        public string WebSocketUrl { get; set; }
         //Wallet
 
         public string SecretType { get; set; }
@@ -128,12 +137,22 @@ namespace BlockM3.AEternity.SDK
 
         public string SecretKeySpec { get; set; }
 
+
+
+
+
         /**
          * this param has direct influence to the number of mnemonic seed words for correlation of entropy
          * bit size and number of words see spec {@linkplain
          * https://github.com/bitcoin/bips/blob/master/bip-0039.mediawiki#Generating_the_mnemonic}
          */
         public int EntropySizeInByte { get; set; }
+
+
+        public int ChannelTimeoutIdle { get; set; }
+
+        public int ChannelTimeout
+
 
 
         public virtual HttpClient GetHttpClient()
@@ -147,6 +166,13 @@ namespace BlockM3.AEternity.SDK
                 throw new ArgumentException("Cannot instantiate ApiClient due to missing BaseUrl");
             _logger.LogDebug("Initializing ApiClient using BaseUrl {0}", BaseUrl);
             return new Generated.Api.Client(BaseUrl, GetHttpClient());
+        }
+
+        public async Task<WebSocketMessageHandler> GetWebSocketHandlerAsync(Uri completeUri, CancellationToken token = default)
+        {
+            ClientWebSocket ws = new ClientWebSocket();
+            await ws.ConnectAsync(completeUri, token);
+            return new WebSocketMessageHandler(ws);
         }
 
         public ILoggerFactory GetLoggerFactory()
