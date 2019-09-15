@@ -4,7 +4,9 @@
 
 [![Build status](https://ci.appveyor.com/api/projects/status/7xeyr1qx2opxy5jn/branch/master?svg=true)](https://ci.appveyor.com/project/maxpiva/aepp-sdk-net/branch/master)
 
-## NuGet Package  [![NuGet](https://img.shields.io/nuget/v/aepp-sdk-net.svg)](https://www.nuget.org/packages/aepp-sdk-net/)
+## NuGet Package
+
+[![NuGet](https://img.shields.io/nuget/v/aepp-sdk-net.svg)](https://www.nuget.org/packages/aepp-sdk-net/)
 
 ```
     PM> Install-Package aepp-sdk-net
