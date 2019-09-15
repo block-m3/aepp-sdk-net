@@ -1,9 +1,14 @@
 # aepp-sdk-net
 .NET SDK to interact with the Æternity blockchain
 
-Master is beta, not for production enviroment.
 
 [![Build status](https://ci.appveyor.com/api/projects/status/7xeyr1qx2opxy5jn/branch/master?svg=true)](https://ci.appveyor.com/project/maxpiva/aepp-sdk-net/branch/master)
+
+## NuGet Package  [![NuGet](https://img.shields.io/nuget/v/aepp-sdk-net.svg)](https://www.nuget.org/packages/aepp-sdk-net/)
+
+```
+    PM> Install-Package aepp-sdk-net
+```
 
 Loosely based on the following sdks:
 
@@ -166,7 +171,5 @@ svc.Stop(); //Stop the service
 
 **TODO**
 
-- State Channels are wip, not usable yet. websocket code is not started yet.
-- Serialization/Deserialization code for Contracts inputs and outputs are wacky. Requires better code,understanding of the contract input/output formats and testing. 
+- State Channels are wip, not usable yet. websocket code is not started yet, will wait till LIMA becomes stable.
 - Better error handling.
-- nugets will be released, when this library jump out of beta.
