@@ -1,5 +1,5 @@
 # aepp-sdk-net
-.NET SDK to interact with the Æternity blockchain
+.NET SDK to interact with the æternity blockchain
 
 
 [![Build status](https://ci.appveyor.com/api/projects/status/7xeyr1qx2opxy5jn/branch/master?svg=true)](https://ci.appveyor.com/project/maxpiva/aepp-sdk-net/branch/master)
