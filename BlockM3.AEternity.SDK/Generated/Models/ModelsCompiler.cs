@@ -33,6 +33,11 @@ namespace BlockM3.AEternity.SDK.Generated.Models
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.0.22.0 (Newtonsoft.Json v9.0.0.0)")]
     public partial class CompileOpts 
     {
+        /// <summary>Compiler backend; fate | aevm</summary>
+        [Newtonsoft.Json.JsonProperty("backend", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
+        public CompileOptsBackend? Backend { get; set; }
+    
         /// <summary>An explicit file system, mapping file names to file content</summary>
         [Newtonsoft.Json.JsonProperty("file_system", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public object FileSystem { get; set; }
@@ -67,6 +72,48 @@ namespace BlockM3.AEternity.SDK.Generated.Models
     }
     
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.0.22.0 (Newtonsoft.Json v9.0.0.0)")]
+    public partial class CompilerErrors : System.Collections.ObjectModel.Collection<CompilerError>
+    {
+    
+    }
+    
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.0.22.0 (Newtonsoft.Json v9.0.0.0)")]
+    public partial class CompilerError 
+    {
+        [Newtonsoft.Json.JsonProperty("type", Required = Newtonsoft.Json.Required.Always)]
+        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
+        public string Type { get; set; }
+    
+        [Newtonsoft.Json.JsonProperty("pos", Required = Newtonsoft.Json.Required.Always)]
+        [System.ComponentModel.DataAnnotations.Required]
+        public ErrorPos Pos { get; set; } = new ErrorPos();
+    
+        [Newtonsoft.Json.JsonProperty("message", Required = Newtonsoft.Json.Required.Always)]
+        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
+        public string Message { get; set; }
+    
+        [Newtonsoft.Json.JsonProperty("context", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Context { get; set; }
+    
+    
+    }
+    
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.0.22.0 (Newtonsoft.Json v9.0.0.0)")]
+    public partial class ErrorPos 
+    {
+        [Newtonsoft.Json.JsonProperty("file", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string File { get; set; }
+    
+        [Newtonsoft.Json.JsonProperty("line", Required = Newtonsoft.Json.Required.Always)]
+        public BigInteger Line { get; set; }
+    
+        [Newtonsoft.Json.JsonProperty("col", Required = Newtonsoft.Json.Required.Always)]
+        public BigInteger Col { get; set; }
+    
+    
+    }
+    
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.0.22.0 (Newtonsoft.Json v9.0.0.0)")]
     public partial class ACI 
     {
         [Newtonsoft.Json.JsonProperty("encoded_aci", Required = Newtonsoft.Json.Required.Always)]
@@ -94,6 +141,9 @@ namespace BlockM3.AEternity.SDK.Generated.Models
         [Newtonsoft.Json.JsonProperty("source", Required = Newtonsoft.Json.Required.Always)]
         [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
         public string Source { get; set; }
+    
+        [Newtonsoft.Json.JsonProperty("options", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public CompileOpts Options { get; set; }
     
         /// <summary>Name of the called function</summary>
         [Newtonsoft.Json.JsonProperty("function", Required = Newtonsoft.Json.Required.Always)]
@@ -151,6 +201,9 @@ namespace BlockM3.AEternity.SDK.Generated.Models
         [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
         public string Source { get; set; }
     
+        [Newtonsoft.Json.JsonProperty("options", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public CompileOpts Options { get; set; }
+    
         /// <summary>Name of function to call</summary>
         [Newtonsoft.Json.JsonProperty("function", Required = Newtonsoft.Json.Required.Always)]
         [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
@@ -160,6 +213,37 @@ namespace BlockM3.AEternity.SDK.Generated.Models
         [Newtonsoft.Json.JsonProperty("arguments", Required = Newtonsoft.Json.Required.Always)]
         [System.ComponentModel.DataAnnotations.Required]
         public System.Collections.Generic.ICollection<string> Arguments { get; set; } = new System.Collections.ObjectModel.Collection<string>();
+    
+    
+    }
+    
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.0.22.0 (Newtonsoft.Json v9.0.0.0)")]
+    public partial class BytecodeCallResultInput 
+    {
+        /// <summary>Compiled contract</summary>
+        [Newtonsoft.Json.JsonProperty("bytecode", Required = Newtonsoft.Json.Required.Always)]
+        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
+        public string Bytecode { get; set; }
+    
+        /// <summary>Name of the called function</summary>
+        [Newtonsoft.Json.JsonProperty("function", Required = Newtonsoft.Json.Required.Always)]
+        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
+        public string Function { get; set; }
+    
+        /// <summary>Call result type (ok | revert | error)</summary>
+        [Newtonsoft.Json.JsonProperty("call-result", Required = Newtonsoft.Json.Required.Always)]
+        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
+        public string CallResult { get; set; }
+    
+        /// <summary>Call result value (ABI encoded data or error string)</summary>
+        [Newtonsoft.Json.JsonProperty("call-value", Required = Newtonsoft.Json.Required.Always)]
+        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
+        public string CallValue { get; set; }
+    
+        /// <summary>Compiler backend; fate | aevm</summary>
+        [Newtonsoft.Json.JsonProperty("backend", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
+        public BytecodeCallResultInputBackend? Backend { get; set; }
     
     
     }
@@ -177,19 +261,48 @@ namespace BlockM3.AEternity.SDK.Generated.Models
         [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
         public string Bytecode { get; set; }
     
+        /// <summary>Compiler backend; fate | aevm</summary>
+        [Newtonsoft.Json.JsonProperty("backend", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
+        public DecodeCalldataBytecodeBackend? Backend { get; set; }
+    
     
     }
     
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.0.22.0 (Newtonsoft.Json v9.0.0.0)")]
     public partial class DecodeCalldataSource 
     {
+        /// <summary>(Possibly partial) Sophia contract code</summary>
+        [Newtonsoft.Json.JsonProperty("source", Required = Newtonsoft.Json.Required.Always)]
+        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
+        public string Source { get; set; }
+    
+        [Newtonsoft.Json.JsonProperty("options", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public CompileOpts Options { get; set; }
+    
         /// <summary>Calldata to dissect</summary>
-        [Newtonsoft.Json.JsonProperty("calldata", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [Newtonsoft.Json.JsonProperty("calldata", Required = Newtonsoft.Json.Required.Always)]
+        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
         public string CallData { get; set; }
     
-        /// <summary>(Possibly partial) Sophia contract code</summary>
-        [Newtonsoft.Json.JsonProperty("source", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string Source { get; set; }
+        /// <summary>Name of the function to call</summary>
+        [Newtonsoft.Json.JsonProperty("function", Required = Newtonsoft.Json.Required.Always)]
+        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
+        public string Function { get; set; }
+    
+    
+    }
+    
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.0.22.0 (Newtonsoft.Json v9.0.0.0)")]
+    public partial class DecodedCallresult 
+    {
+        [Newtonsoft.Json.JsonProperty("function", Required = Newtonsoft.Json.Required.Always)]
+        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
+        public string Function { get; set; }
+    
+        [Newtonsoft.Json.JsonProperty("result", Required = Newtonsoft.Json.Required.Always)]
+        [System.ComponentModel.DataAnnotations.Required]
+        public object Result { get; set; } = new object();
     
     
     }
@@ -215,6 +328,39 @@ namespace BlockM3.AEternity.SDK.Generated.Models
         [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
         public string CallData { get; set; }
     
+    
+    }
+    
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.0.22.0 (Newtonsoft.Json v9.0.0.0)")]
+    public enum CompileOptsBackend
+    {
+        [System.Runtime.Serialization.EnumMember(Value = @"fate")]
+        Fate = 0,
+    
+        [System.Runtime.Serialization.EnumMember(Value = @"aevm")]
+        Aevm = 1,
+    
+    }
+    
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.0.22.0 (Newtonsoft.Json v9.0.0.0)")]
+    public enum BytecodeCallResultInputBackend
+    {
+        [System.Runtime.Serialization.EnumMember(Value = @"fate")]
+        Fate = 0,
+    
+        [System.Runtime.Serialization.EnumMember(Value = @"aevm")]
+        Aevm = 1,
+    
+    }
+    
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.0.22.0 (Newtonsoft.Json v9.0.0.0)")]
+    public enum DecodeCalldataBytecodeBackend
+    {
+        [System.Runtime.Serialization.EnumMember(Value = @"fate")]
+        Fate = 0,
+    
+        [System.Runtime.Serialization.EnumMember(Value = @"aevm")]
+        Aevm = 1,
     
     }
 

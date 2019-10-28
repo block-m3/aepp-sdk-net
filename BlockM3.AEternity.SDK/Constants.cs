@@ -118,14 +118,16 @@ namespace BlockM3.AEternity.SDK
             public const string DEFAULT_TESTNET_CONTRACT_URL = "https://compiler.aepps.com";
 
             public const ushort VM_FORTUNA = 4;
-            public const ushort VM_LIMA = 5;
+            public const ushort VM_FATE = 5;
+            public const ushort VM_SOFIA_LIMA = 6;
 
-            public const ushort VM_VERSION = VM_FORTUNA;
+            public const ushort VM_VERSION = VM_FATE;
 
             public const ushort ABI_SOPHIA = 1;
             public const ushort ABI_SOLIDITY = 2;
+            public const ushort ABI_FATE = 3;
 
-            public const ushort ABI_VERSION = ABI_SOPHIA;
+            public const ushort ABI_VERSION = ABI_FATE;
         }
 
         public struct Network

@@ -25,6 +25,10 @@ namespace BlockM3.AEternity.SDK.ClientModels
 
         public string ByteCode { get; private set; }
 
+        internal CompileOptsBackend CompileOpts => AbiVersion == Constants.BaseConstants.ABI_FATE && VmVersion == Constants.BaseConstants.VM_FATE ? CompileOptsBackend.Fate : CompileOptsBackend.Aevm;
+        internal DecodeCalldataBytecodeBackend DecodeOpts => AbiVersion == Constants.BaseConstants.ABI_FATE && VmVersion == Constants.BaseConstants.VM_FATE ? DecodeCalldataBytecodeBackend.Fate : DecodeCalldataBytecodeBackend.Aevm;
+        internal BytecodeCallResultInputBackend BytecodeOpts => AbiVersion == Constants.BaseConstants.ABI_FATE && VmVersion == Constants.BaseConstants.VM_FATE ? BytecodeCallResultInputBackend.Fate : BytecodeCallResultInputBackend.Aevm;
+
         public List<Function> Functions { get; private set; }
 
         public Dictionary<BigInteger, SophiaType> Events { get; private set; }
@@ -52,9 +56,9 @@ namespace BlockM3.AEternity.SDK.ClientModels
 
         public string SourceCode { get; private set; }
 
-        public ushort AbiVersion { get; private set; }
+        public ushort AbiVersion { get; set; }
 
-        public ushort VmVersion { get; private set; }
+        public ushort VmVersion { get; set; }
 
         public string ContractId { get; internal set; }
 
@@ -253,7 +257,7 @@ namespace BlockM3.AEternity.SDK.ClientModels
                 sts.Add(f.InputTypes[x].Serialize(pars[x], pars[x].GetType()));
             }
 
-            Calldata cl = await Account.Client.EncodeCallDataAsync(SourceCode, function, sts, token).ConfigureAwait(false);
+            Calldata cl = await Account.Client.EncodeCallDataAsync(SourceCode, function, sts, CompileOpts, token).ConfigureAwait(false);
             return cl.CallData;
         }
 
@@ -285,13 +289,13 @@ namespace BlockM3.AEternity.SDK.ClientModels
             c.VmVersion = vmVersion;
             if (string.IsNullOrEmpty(bytecode))
             {
-                ByteCode bc = await account.Client.CompileAsync(sourcecode, null, null, token).ConfigureAwait(false);
+                ByteCode bc = await account.Client.CompileAsync(sourcecode, null, null,c.CompileOpts, token).ConfigureAwait(false);
                 c.ByteCode = bc.Bytecode;
             }
             else
                 c.ByteCode = bytecode;
 
-            ACI acii = await account.Client.GenerateACIAsync(sourcecode, token).ConfigureAwait(false);
+            ACI acii = await account.Client.GenerateACIAsync(sourcecode, c.CompileOpts, token).ConfigureAwait(false);
             c.ACI = acii.EncodedAci.ToString();
             c.Interface = acii.Interface;
             c.ContractId = contractId;

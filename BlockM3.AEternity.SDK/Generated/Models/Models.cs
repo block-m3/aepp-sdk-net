@@ -156,6 +156,10 @@ namespace BlockM3.AEternity.SDK.Generated.Models
         [Newtonsoft.Json.JsonProperty("nonce", Required = Newtonsoft.Json.Required.Always)]
         public ulong Nonce { get; set; }
     
+        /// <summary>Payable</summary>
+        [Newtonsoft.Json.JsonProperty("payable", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public bool? Payable { get; set; }
+    
         [Newtonsoft.Json.JsonProperty("kind", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
         public AccountKind? Kind { get; set; }
@@ -494,6 +498,9 @@ namespace BlockM3.AEternity.SDK.Generated.Models
     
         [Newtonsoft.Json.JsonProperty("name_salt", Required = Newtonsoft.Json.Required.Always)]
         public BigInteger NameSalt { get; set; }
+    
+        [Newtonsoft.Json.JsonProperty("name_fee", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public BigInteger? NameFee { get; set; }
     
         [Newtonsoft.Json.JsonProperty("fee", Required = Newtonsoft.Json.Required.Always)]
         public BigInteger Fee { get; set; }
@@ -1098,9 +1105,8 @@ namespace BlockM3.AEternity.SDK.Generated.Models
         [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
         public string Hash { get; set; }
     
-        /// <summary>signatures required unless for Generalized Account Meta transactions</summary>
+        /// <summary>At least one signature is required unless for Generalized Account Meta transactions</summary>
         [Newtonsoft.Json.JsonProperty("signatures", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        [System.ComponentModel.DataAnnotations.MinLength(1)]
         public System.Collections.Generic.ICollection<string> Signatures { get; set; }
     
     
@@ -1128,6 +1134,8 @@ namespace BlockM3.AEternity.SDK.Generated.Models
     [JsonInheritanceAttribute("NameRevokeTxJSON", typeof(NameRevokeTxJSON))]
     [JsonInheritanceAttribute("ContractCreateTxJSON", typeof(ContractCreateTxJSON))]
     [JsonInheritanceAttribute("ContractCallTxJSON", typeof(ContractCallTxJSON))]
+    [JsonInheritanceAttribute("GAAttachTxJSON", typeof(GAAttachTxJSON))]
+    [JsonInheritanceAttribute("GAMetaTxJSON", typeof(GAMetaTxJSON))]
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.0.22.0 (Newtonsoft.Json v9.0.0.0)")]
     public partial class GenericTx 
     {
@@ -1640,6 +1648,9 @@ namespace BlockM3.AEternity.SDK.Generated.Models
         [Newtonsoft.Json.JsonProperty("name_salt", Required = Newtonsoft.Json.Required.Always)]
         public BigInteger NameSalt { get; set; }
     
+        [Newtonsoft.Json.JsonProperty("name_fee", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public BigInteger? NameFee { get; set; }
+    
         [Newtonsoft.Json.JsonProperty("fee", Required = Newtonsoft.Json.Required.Always)]
         public BigInteger Fee { get; set; }
     
@@ -1835,6 +1846,94 @@ namespace BlockM3.AEternity.SDK.Generated.Models
     }
     
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.0.22.0 (Newtonsoft.Json v9.0.0.0)")]
+    public partial class GAAttachTxJSON : GenericTx
+    {
+        /// <summary>Contract owner pub_key</summary>
+        [Newtonsoft.Json.JsonProperty("owner_id", Required = Newtonsoft.Json.Required.Always)]
+        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
+        public string OwnerId { get; set; }
+    
+        /// <summary>Owner's nonce</summary>
+        [Newtonsoft.Json.JsonProperty("nonce", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public ulong? Nonce { get; set; }
+    
+        /// <summary>Contract's code</summary>
+        [Newtonsoft.Json.JsonProperty("code", Required = Newtonsoft.Json.Required.Always)]
+        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
+        public string Code { get; set; }
+    
+        /// <summary>Virtual machine's version</summary>
+        [Newtonsoft.Json.JsonProperty("vm_version", Required = Newtonsoft.Json.Required.Always)]
+        public ushort VmVersion { get; set; }
+    
+        /// <summary>ABI version</summary>
+        [Newtonsoft.Json.JsonProperty("abi_version", Required = Newtonsoft.Json.Required.Always)]
+        public ushort AbiVersion { get; set; }
+    
+        [Newtonsoft.Json.JsonProperty("gas", Required = Newtonsoft.Json.Required.Always)]
+        public ulong Gas { get; set; }
+    
+        [Newtonsoft.Json.JsonProperty("gas_price", Required = Newtonsoft.Json.Required.Always)]
+        public BigInteger GasPrice { get; set; }
+    
+        [Newtonsoft.Json.JsonProperty("fee", Required = Newtonsoft.Json.Required.Always)]
+        public BigInteger Fee { get; set; }
+    
+        [Newtonsoft.Json.JsonProperty("ttl", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public ulong? Ttl { get; set; }
+    
+        /// <summary>Contract call data</summary>
+        [Newtonsoft.Json.JsonProperty("call_data", Required = Newtonsoft.Json.Required.Always)]
+        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
+        public string CallData { get; set; }
+    
+        /// <summary>Contract authorization function hash (hex encoded)</summary>
+        [Newtonsoft.Json.JsonProperty("auth_fun", Required = Newtonsoft.Json.Required.Always)]
+        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
+        [System.ComponentModel.DataAnnotations.RegularExpression(@"^(0x|0X)?[a-fA-F0-9]+$'")]
+        public string AuthFun { get; set; }
+    
+    
+    }
+    
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.0.22.0 (Newtonsoft.Json v9.0.0.0)")]
+    public partial class GAMetaTxJSON : GenericTx
+    {
+        /// <summary>Account owner pub_key</summary>
+        [Newtonsoft.Json.JsonProperty("ga_id", Required = Newtonsoft.Json.Required.Always)]
+        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
+        public string GaId { get; set; }
+    
+        /// <summary>ABI version</summary>
+        [Newtonsoft.Json.JsonProperty("abi_version", Required = Newtonsoft.Json.Required.Always)]
+        public ushort AbiVersion { get; set; }
+    
+        [Newtonsoft.Json.JsonProperty("gas", Required = Newtonsoft.Json.Required.Always)]
+        public ulong Gas { get; set; }
+    
+        [Newtonsoft.Json.JsonProperty("gas_price", Required = Newtonsoft.Json.Required.Always)]
+        public BigInteger GasPrice { get; set; }
+    
+        [Newtonsoft.Json.JsonProperty("fee", Required = Newtonsoft.Json.Required.Always)]
+        public BigInteger Fee { get; set; }
+    
+        [Newtonsoft.Json.JsonProperty("ttl", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public ulong? Ttl { get; set; }
+    
+        /// <summary>Contract authorization function call data</summary>
+        [Newtonsoft.Json.JsonProperty("auth_data", Required = Newtonsoft.Json.Required.Always)]
+        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
+        public string AuthData { get; set; }
+    
+        /// <summary>Enclosed signed transaction</summary>
+        [Newtonsoft.Json.JsonProperty("tx", Required = Newtonsoft.Json.Required.Always)]
+        [System.ComponentModel.DataAnnotations.Required]
+        public GenericSignedTx TX { get; set; } = new GenericSignedTx();
+    
+    
+    }
+    
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.0.22.0 (Newtonsoft.Json v9.0.0.0)")]
     public partial class TxInfoObject 
     {
         [Newtonsoft.Json.JsonProperty("call_info", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
@@ -2013,7 +2112,64 @@ namespace BlockM3.AEternity.SDK.Generated.Models
         /// <summary>Txs</summary>
         [Newtonsoft.Json.JsonProperty("txs", Required = Newtonsoft.Json.Required.Always)]
         [System.ComponentModel.DataAnnotations.Required]
-        public System.Collections.Generic.ICollection<string> TXs { get; set; } = new System.Collections.ObjectModel.Collection<string>();
+        public System.Collections.Generic.ICollection<DryRunInputItem> TXs { get; set; } = new System.Collections.ObjectModel.Collection<DryRunInputItem>();
+    
+    
+    }
+    
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.0.22.0 (Newtonsoft.Json v9.0.0.0)")]
+    public partial class DryRunInputItem 
+    {
+        [Newtonsoft.Json.JsonProperty("tx", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string TX { get; set; }
+    
+        [Newtonsoft.Json.JsonProperty("call_req", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public DryRunCallReq CallReq { get; set; }
+    
+    
+    }
+    
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.0.22.0 (Newtonsoft.Json v9.0.0.0)")]
+    public partial class DryRunCallReq 
+    {
+        [Newtonsoft.Json.JsonProperty("calldata", Required = Newtonsoft.Json.Required.Always)]
+        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
+        public string CallData { get; set; }
+    
+        [Newtonsoft.Json.JsonProperty("contract", Required = Newtonsoft.Json.Required.Always)]
+        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
+        public string Contract { get; set; }
+    
+        [Newtonsoft.Json.JsonProperty("amount", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public BigInteger? Amount { get; set; }
+    
+        [Newtonsoft.Json.JsonProperty("gas", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public BigInteger? Gas { get; set; }
+    
+        [Newtonsoft.Json.JsonProperty("caller", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Caller { get; set; }
+    
+        [Newtonsoft.Json.JsonProperty("nonce", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public ulong? Nonce { get; set; }
+    
+        [Newtonsoft.Json.JsonProperty("abi_version", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public ushort? AbiVersion { get; set; }
+    
+        [Newtonsoft.Json.JsonProperty("context", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public DryRunCallContext Context { get; set; }
+    
+    
+    }
+    
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.0.22.0 (Newtonsoft.Json v9.0.0.0)")]
+    public partial class DryRunCallContext 
+    {
+        [Newtonsoft.Json.JsonProperty("tx_hash", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string TXHash { get; set; }
+    
+        /// <summary>This call will have effects on the next call in this dry-run (or not)</summary>
+        [Newtonsoft.Json.JsonProperty("stateful", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public bool? Stateful { get; set; }
     
     
     }
@@ -2386,6 +2542,94 @@ namespace BlockM3.AEternity.SDK.Generated.Models
         /// <summary>Sum of all tokens from other fields</summary>
         [Newtonsoft.Json.JsonProperty("total", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public BigInteger? Total { get; set; }
+    
+    
+    }
+    
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.0.22.0 (Newtonsoft.Json v9.0.0.0)")]
+    public partial class GAAttachTx 
+    {
+        /// <summary>Contract owner pub_key</summary>
+        [Newtonsoft.Json.JsonProperty("owner_id", Required = Newtonsoft.Json.Required.Always)]
+        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
+        public string OwnerId { get; set; }
+    
+        /// <summary>Owner's nonce</summary>
+        [Newtonsoft.Json.JsonProperty("nonce", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public ulong? Nonce { get; set; }
+    
+        /// <summary>Contract's code</summary>
+        [Newtonsoft.Json.JsonProperty("code", Required = Newtonsoft.Json.Required.Always)]
+        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
+        public string Code { get; set; }
+    
+        /// <summary>Virtual machine's version</summary>
+        [Newtonsoft.Json.JsonProperty("vm_version", Required = Newtonsoft.Json.Required.Always)]
+        public ushort VmVersion { get; set; }
+    
+        /// <summary>ABI version</summary>
+        [Newtonsoft.Json.JsonProperty("abi_version", Required = Newtonsoft.Json.Required.Always)]
+        public ushort AbiVersion { get; set; }
+    
+        [Newtonsoft.Json.JsonProperty("gas", Required = Newtonsoft.Json.Required.Always)]
+        public ulong Gas { get; set; }
+    
+        [Newtonsoft.Json.JsonProperty("gas_price", Required = Newtonsoft.Json.Required.Always)]
+        public BigInteger GasPrice { get; set; }
+    
+        [Newtonsoft.Json.JsonProperty("fee", Required = Newtonsoft.Json.Required.Always)]
+        public BigInteger Fee { get; set; }
+    
+        [Newtonsoft.Json.JsonProperty("ttl", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public ulong? Ttl { get; set; }
+    
+        /// <summary>Contract call data</summary>
+        [Newtonsoft.Json.JsonProperty("call_data", Required = Newtonsoft.Json.Required.Always)]
+        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
+        public string CallData { get; set; }
+    
+        /// <summary>Contract authorization function hash (hex encoded)</summary>
+        [Newtonsoft.Json.JsonProperty("auth_fun", Required = Newtonsoft.Json.Required.Always)]
+        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
+        [System.ComponentModel.DataAnnotations.RegularExpression(@"^(0x|0X)?[a-fA-F0-9]+$'")]
+        public string AuthFun { get; set; }
+    
+    
+    }
+    
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.0.22.0 (Newtonsoft.Json v9.0.0.0)")]
+    public partial class GAMetaTx 
+    {
+        /// <summary>Account owner pub_key</summary>
+        [Newtonsoft.Json.JsonProperty("ga_id", Required = Newtonsoft.Json.Required.Always)]
+        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
+        public string GaId { get; set; }
+    
+        /// <summary>ABI version</summary>
+        [Newtonsoft.Json.JsonProperty("abi_version", Required = Newtonsoft.Json.Required.Always)]
+        public ushort AbiVersion { get; set; }
+    
+        [Newtonsoft.Json.JsonProperty("gas", Required = Newtonsoft.Json.Required.Always)]
+        public ulong Gas { get; set; }
+    
+        [Newtonsoft.Json.JsonProperty("gas_price", Required = Newtonsoft.Json.Required.Always)]
+        public BigInteger GasPrice { get; set; }
+    
+        [Newtonsoft.Json.JsonProperty("fee", Required = Newtonsoft.Json.Required.Always)]
+        public BigInteger Fee { get; set; }
+    
+        [Newtonsoft.Json.JsonProperty("ttl", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public ulong? Ttl { get; set; }
+    
+        /// <summary>Contract authorization function call data</summary>
+        [Newtonsoft.Json.JsonProperty("auth_data", Required = Newtonsoft.Json.Required.Always)]
+        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
+        public string AuthData { get; set; }
+    
+        /// <summary>Enclosed signed transaction</summary>
+        [Newtonsoft.Json.JsonProperty("tx", Required = Newtonsoft.Json.Required.Always)]
+        [System.ComponentModel.DataAnnotations.Required]
+        public GenericSignedTx TX { get; set; } = new GenericSignedTx();
     
     
     }

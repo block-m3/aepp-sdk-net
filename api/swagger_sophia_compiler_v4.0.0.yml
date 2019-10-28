@@ -1,7 +1,7 @@
 swagger: '2.0'
 info:
   description: 'This is the [Aeternity](https://www.aeternity.com/) compiler API.'
-  version: 3.2.0
+  version: 4.0.0
   title: Aeternity node
   termsOfService: 'https://www.aeternity.com/terms/'
   contact:
@@ -34,10 +34,10 @@ paths:
           description: Invalid input
           schema:
             $ref: '#/definitions/Error'
-        '403':
-          description: Invalid input
+        '400':
+          description: Compiler errors
           schema:
-            $ref: '#/definitions/Error'
+            $ref: '#/definitions/CompilerErrors'
 
   /compile:
     post:
@@ -63,10 +63,10 @@ paths:
           description: Invalid data
           schema:
             $ref: '#/definitions/Error'
-        '403':
+        '400':
           description: Invalid contract
           schema:
-            $ref: '#/definitions/Error'
+            $ref: '#/definitions/CompilerErrors'
 
   /decode-data:
     post:
@@ -92,10 +92,10 @@ paths:
           description: Invalid data
           schema:
             $ref: '#/definitions/Error'
-        '403':
+        '400':
           description: Invalid data
           schema:
-            $ref: '#/definitions/Error'
+            $ref: '#/definitions/CompilerErrors'
 
   /decode-call-result:
     post:
@@ -121,10 +121,39 @@ paths:
           description: Invalid data
           schema:
             $ref: '#/definitions/Error'
-        '403':
+        '400':
+          description: Invalid data
+          schema:
+            $ref: '#/definitions/CompilerErrors'
+
+  /decode-call-result/bytecode:
+    post:
+      operationId: 'DecodeCallResultBytecode'
+      description: 'Decode the result of contract call from Bytecode'
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: body
+          description: Call result + compiled contract
+          required: true
+          schema:
+            $ref: '#/definitions/BytecodeCallResultInput'
+      responses:
+        '200':
+          description: Json encoded data
+          schema:
+            $ref: '#/definitions/DecodedCallresult'
+        '400':
           description: Invalid data
           schema:
             $ref: '#/definitions/Error'
+        '400':
+          description: Invalid data
+          schema:
+            $ref: '#/definitions/CompilerErrors'
 
   /encode-calldata:
     post:
@@ -150,10 +179,10 @@ paths:
           description: Invalid data
           schema:
             $ref: '#/definitions/Error'
-        '403':
+        '400':
           description: Invalid contract
           schema:
-            $ref: '#/definitions/Error'
+            $ref: '#/definitions/CompilerErrors'
 
   /decode-calldata/bytecode:
     post:
@@ -179,7 +208,7 @@ paths:
           description: Invalid data
           schema:
             $ref: '#/definitions/Error'
-        '403':
+        '400':
           description: Invalid contract
           schema:
             $ref: '#/definitions/Error'
@@ -208,10 +237,10 @@ paths:
           description: Invalid data
           schema:
             $ref: '#/definitions/Error'
-        '403':
+        '400':
           description: Invalid data
           schema:
-            $ref: '#/definitions/Error'
+            $ref: '#/definitions/CompilerErrors'
 
   /version:
     get:
@@ -256,7 +285,7 @@ paths:
           description: 'API description'
           schema:
             $ref: '#/definitions/API'
-        '403':
+        '400':
           description: 'Error'
           schema:
             $ref: '#/definitions/Error'
@@ -276,6 +305,10 @@ definitions:
   CompileOpts:
     type: object
     properties:
+      backend:
+        description: 'Compiler backend; fate | aevm'
+        type: string
+        enum: [fate, aevm]
       file_system:
         description: 'An explicit file system, mapping file names to file content'
         type: object
@@ -305,6 +338,37 @@ definitions:
         type: string
     required:
       - reason
+  CompilerErrors:
+    type: array
+    items:
+      $ref: '#/definitions/CompilerError'
+  CompilerError:
+    type: object
+    properties:
+      type:
+        type: string
+      pos:
+        $ref: '#/definitions/ErrorPos'
+      message:
+        type: string
+      context:
+        type: string
+    required:
+      - type
+      - pos
+      - message
+  ErrorPos:
+    type: object
+    properties:
+      file:
+        type: string
+      line:
+        type: integer
+      col:
+        type: integer
+    required:
+      - line
+      - col
   ACI:
     type: object
     properties:
@@ -331,6 +395,8 @@ definitions:
       source:
         description: '(Possibly partial) Sophia contract code/interface'
         type: string
+      options:
+        $ref: '#/definitions/CompileOpts'
       function:
         description: 'Name of the called function'
         type: string
@@ -369,6 +435,8 @@ definitions:
       source:
         description: '(Possibly partial) Sophia contract code'
         type: string
+      options:
+        $ref: '#/definitions/CompileOpts'
       function:
         description: 'Name of function to call'
         type: string
@@ -381,6 +449,30 @@ definitions:
       - source
       - function
       - arguments
+  BytecodeCallResultInput:
+    type: object
+    properties:
+      bytecode:
+        description: 'Compiled contract'
+        $ref: '#/definitions/EncodedByteArray'
+      function:
+        description: 'Name of the called function'
+        type: string
+      call-result:
+        description: 'Call result type (ok | revert | error)'
+        type: string
+      call-value:
+        description: 'Call result value (ABI encoded data or error string)'
+        type: string
+      backend:
+        description: 'Compiler backend; fate | aevm'
+        type: string
+        enum: [fate, aevm]
+    required:
+      - function
+      - call-result
+      - call-value
+      - bytecode
   DecodeCalldataBytecode:
     type: object
     properties:
@@ -390,18 +482,41 @@ definitions:
       bytecode:
         description: 'Compiled contract'
         $ref: '#/definitions/EncodedByteArray'
+      backend:
+        description: 'Compiler backend; fate | aevm'
+        type: string
+        enum: [fate, aevm]
     required:
       - calldata
       - bytecode
   DecodeCalldataSource:
     type: object
     properties:
-      calldata:
-        description: 'Calldata to dissect'
-        $ref: '#/definitions/EncodedByteArray'
       source:
         description: '(Possibly partial) Sophia contract code'
         type: string
+      options:
+        $ref: '#/definitions/CompileOpts'
+      calldata:
+        description: 'Calldata to dissect'
+        $ref: '#/definitions/EncodedByteArray'
+      function:
+        description: 'Name of the function to call'
+        type: string
+    required:
+      - calldata
+      - function
+      - source
+  DecodedCallresult:
+    type: object
+    properties:
+      function:
+        type: string
+      result:
+        type: object
+    required:
+      - function
+      - result
   DecodedCalldata:
     type: object
     properties:

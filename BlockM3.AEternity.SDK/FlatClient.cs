@@ -40,6 +40,9 @@ namespace BlockM3.AEternity.SDK
             _compilerClient = config.GetCompilerApiClient();
         }
 
+        private string _backend = null;
+
+
         internal Configuration Configuration { get; }
 
         private Generated.Api.Client _apiClient { get; }
@@ -205,24 +208,49 @@ namespace BlockM3.AEternity.SDK
 
         //Compiler
 
-
-        public Task<Calldata> EncodeCallDataAsync(string sourceCode, string function, List<string> arguments, CancellationToken token = default(CancellationToken))
+        private async Task CheckCompilerBackendAsync()
         {
+            if (_backend == null)
+            { 
+                APIVersion version=await _compilerClient.APIVersionAsync();
+                string v = version.ApiVersion.Replace(".", "");
+                if (v.Length == 1)
+                    v += "0";
+                if (v.Length == 2)
+                    v += "0";
+                int v2 = int.Parse(v);
+                if (v2 > 399)
+                {
+                    _backend = "fate";
+                }
+                else
+                {
+                    _backend = "aevm";
+                }
+            }
+        }
+        public async Task<Calldata> EncodeCallDataAsync(string sourceCode, string function, List<string> arguments, CompileOptsBackend? opts = null, CancellationToken token = default(CancellationToken))
+        {
+            await CheckCompilerBackendAsync();
             FunctionCallInput body = new FunctionCallInput();
             body.Source = sourceCode;
             body.Function = function;
+            if (opts == null)
+                opts = _backend == "fate" ? CompileOptsBackend.Fate : CompileOptsBackend.Aevm;
+            body.Options = new CompileOpts() {Backend = opts.Value};
             if (arguments != null)
             {
                 foreach (string arg in arguments)
                     body.Arguments.Add(arg);
             }
 
-            return _compilerClient.EncodeCalldataAsync(body, token);
+            return await _compilerClient.EncodeCalldataAsync(body, token);
         }
 
         public Task<Calldata> EncodeCallDataAsync(string sourceCode, string function, params string[] arguments) => EncodeCallDataAsync(sourceCode, function, arguments.ToList());
-
-        public Task<Calldata> EncodeCallDataAsync(string sourceCode, string function, CancellationToken token, params string[] arguments) => EncodeCallDataAsync(sourceCode, function, arguments.ToList(), token);
+        public Task<Calldata> EncodeCallDataAsync(string sourceCode, string function, CompileOptsBackend opts, params string[] arguments) => EncodeCallDataAsync(sourceCode, function, arguments.ToList(), opts);
+        public Task<Calldata> EncodeCallDataAsync(string sourceCode, string function, CancellationToken token, params string[] arguments) => EncodeCallDataAsync(sourceCode, function, arguments.ToList(), null, token);
+        public Task<Calldata> EncodeCallDataAsync(string sourceCode, string function, CompileOptsBackend opts, CancellationToken token, params string[] arguments) => EncodeCallDataAsync(sourceCode, function, arguments.ToList(), opts, token);
 
         public Task<SophiaJsonData> DecodeDataAsync(string calldata, string sophiaType, CancellationToken token = default(CancellationToken))
         {
@@ -232,31 +260,43 @@ namespace BlockM3.AEternity.SDK
             return _compilerClient.DecodeDataAsync(body, token);
         }
 
-        public Task<JToken> DecodeCallResultAsync(string sourceCode, string function, string callResult, string callValue, CancellationToken token = default(CancellationToken))
+        public async Task<JToken> DecodeCallResultAsync(string sourceCode, string function, string callResult, string callValue,  CompileOptsBackend? opts = null, CancellationToken token = default(CancellationToken))
         {
+            await CheckCompilerBackendAsync();
             SophiaCallResultInput body = new SophiaCallResultInput();
             body.Source = sourceCode;
             body.Function = function;
+            if (opts == null)
+                opts = _backend == "fate" ? CompileOptsBackend.Fate : CompileOptsBackend.Aevm;
+            body.Options = new CompileOpts() {Backend = opts.Value};
             body.CallResult = callResult;
             body.CallValue = callValue;
-            return _compilerClient.DecodeCallResultFixedAsync(body, token);
+            return await _compilerClient.DecodeCallResultFixedAsync(body, token);
         }
 
 
-        public Task<DecodedCalldata> DecodeCallDataWithByteCodeAsync(string calldata, string byteCode, CancellationToken token = default(CancellationToken))
+        public async Task<DecodedCalldata> DecodeCallDataWithByteCodeAsync(string calldata, string byteCode, DecodeCalldataBytecodeBackend? opts=null, CancellationToken token = default(CancellationToken))
         {
+            await CheckCompilerBackendAsync();
             DecodeCalldataBytecode body = new DecodeCalldataBytecode();
             body.CallData = calldata;
             body.Bytecode = byteCode;
-            return _compilerClient.DecodeCalldataBytecodeAsync(body, token);
+            if (opts == null)
+                opts = _backend == "fate" ? DecodeCalldataBytecodeBackend.Fate : DecodeCalldataBytecodeBackend.Aevm;
+            body.Backend = opts.Value;
+            return await _compilerClient.DecodeCalldataBytecodeAsync(body, token);
         }
 
-        public Task<DecodedCalldata> DecodeCallDataWithSourceAsync(string calldata, string sourceCode, CancellationToken token = default(CancellationToken))
+        public async Task<DecodedCalldata> DecodeCallDataWithSourceAsync(string calldata, string sourceCode, CompileOptsBackend? opts = null, CancellationToken token = default(CancellationToken))
         {
+            await CheckCompilerBackendAsync();
             DecodeCalldataSource body = new DecodeCalldataSource();
             body.CallData = calldata;
             body.Source = sourceCode;
-            return _compilerClient.DecodeCalldataSourceAsync(body, token);
+            if (opts == null)
+                opts = _backend == "fate" ? CompileOptsBackend.Fate : CompileOptsBackend.Aevm;
+            body.Options = new CompileOpts() {Backend = opts.Value};
+            return await _compilerClient.DecodeCalldataSourceAsync(body, token);
         }
 
         public Task<CompilerVersion> GetCompilerVersionAsync(CancellationToken token = default(CancellationToken)) => _compilerClient.VersionAsync(token);
@@ -265,20 +305,26 @@ namespace BlockM3.AEternity.SDK
 
         public Task<API> GetCompilerApiAsync(CancellationToken token = default(CancellationToken)) => _compilerClient.ApiAsync(token);
 
-        public Task<ACI> GenerateACIAsync(string contractCode, CancellationToken token = default(CancellationToken))
+        public async Task<ACI> GenerateACIAsync(string contractCode, CompileOptsBackend? opts = null, CancellationToken token = default(CancellationToken))
         {
-            Contract body = new Contract {Code = contractCode, Options = new CompileOpts()};
-            return _compilerClient.GenerateACIAsync(body, token);
+            await CheckCompilerBackendAsync();
+            if (opts == null)
+                opts = _backend == "fate" ? CompileOptsBackend.Fate : CompileOptsBackend.Aevm;
+            Contract body = new Contract {Code = contractCode, Options = new CompileOpts { Backend = opts.Value}};
+            return await _compilerClient.GenerateACIAsync(body, token);
         }
 
-        public Task<ByteCode> CompileAsync(string contractCode, string srcFile, object fileSystem, CancellationToken token = default(CancellationToken))
+        public async Task<ByteCode> CompileAsync(string contractCode, string srcFile, object fileSystem, CompileOptsBackend? opts = null, CancellationToken token = default(CancellationToken))
         {
-            Contract body = new Contract {Code = contractCode, Options = new CompileOpts()};
+            await CheckCompilerBackendAsync();
+            if (opts == null)
+                opts = _backend == "fate" ? CompileOptsBackend.Fate : CompileOptsBackend.Aevm;
+            Contract body = new Contract {Code = contractCode, Options = new CompileOpts() {Backend = opts.Value}};
             if (!string.IsNullOrEmpty(srcFile))
                 body.Options.SrcFile = srcFile;
             if (fileSystem != null)
                 body.Options.FileSystem = fileSystem;
-            return _compilerClient.CompileContractAsync(body, token);
+            return await _compilerClient.CompileContractAsync(body, token);
         }
 
         //Transactions
@@ -728,7 +774,7 @@ namespace BlockM3.AEternity.SDK
 
             body.Accounts = dryRunAccounts;
             body.Top = block?.ToString();
-            unsignedTransactions.ForEach(item => body.TXs.Add(item.TX));
+            unsignedTransactions.ForEach(item => body.TXs.Add(new DryRunInputItem { CallReq = null, TX=item.TX }));
             _logger.LogDebug("Calling dry run on block {0} with body {1}", block, body);
             return _apiClient.DryRunTxsAsync(body, token);
         }

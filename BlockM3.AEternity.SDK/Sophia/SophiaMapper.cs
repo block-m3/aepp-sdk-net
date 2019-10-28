@@ -529,7 +529,7 @@ namespace BlockM3.AEternity.SDK.Sophia
                 return new BytesType(entry, null);
             }
 
-            if (entry == "int")
+            if (entry == "int" || entry=="unit" || entry=="uint")
                 return new IntType(entry);
             if (entry == "string")
                 return new StringType(entry);

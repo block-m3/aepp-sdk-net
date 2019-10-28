@@ -40,17 +40,28 @@ namespace BlockM3.AEternity.SDK.Extensions
         public static KeyBlockOrMicroBlockHeader GetTopBlock(this FlatClient client) => client.GetTopBlockAsync().RunAndUnwrap();
         public static void PostKeyBlock(this FlatClient client, KeyBlock block) => client.PostKeyBlockAsync(block).RunAndUnwrap();
         public static KeyBlock GetCurrentKeyBlock(this FlatClient client) => client.GetCurrentKeyBlockAsync().RunAndUnwrap();
+        
+        
+        
+        
+        
         public static Calldata EncodeCallData(this FlatClient client, string sourceCode, string function, List<string> arguments) => client.EncodeCallDataAsync(sourceCode, function, arguments).RunAndUnwrap();
         public static Calldata EncodeCallData(this FlatClient client, string sourceCode, string function, params string[] arguments) => client.EncodeCallDataAsync(sourceCode, function, arguments).RunAndUnwrap();
+        public static Calldata EncodeCallData(this FlatClient client, string sourceCode, string function, List<string> arguments, CompileOptsBackend opts) => client.EncodeCallDataAsync(sourceCode, function, arguments, opts).RunAndUnwrap();
+        public static Calldata EncodeCallData(this FlatClient client, string sourceCode, string function, CompileOptsBackend opts, params string[] arguments) => client.EncodeCallDataAsync(sourceCode, function, opts, arguments).RunAndUnwrap();
+
+        
         public static SophiaJsonData DecodeCallData(this FlatClient client, string calldata, string sophiaType) => client.DecodeDataAsync(calldata, sophiaType).RunAndUnwrap();
-        public static JToken DecodeCallResult(this FlatClient client, string sourceCode, string function, string callResult, string callValue) => client.DecodeCallResultAsync(sourceCode, function, callResult, callValue).RunAndUnwrap();
-        public static DecodedCalldata DecodeCallDataWithByteCode(this FlatClient client, string calldata, string byteCode) => client.DecodeCallDataWithByteCodeAsync(calldata, byteCode).RunAndUnwrap();
-        public static DecodedCalldata DecodeCallDataWithSource(this FlatClient client, string calldata, string sourceCode) => client.DecodeCallDataWithSourceAsync(calldata, sourceCode).RunAndUnwrap();
+        public static JToken DecodeCallResult(this FlatClient client, string sourceCode, string function, string callResult, string callValue,CompileOptsBackend? opts=null) => client.DecodeCallResultAsync(sourceCode, function, callResult, callValue,opts).RunAndUnwrap();
+        public static DecodedCalldata DecodeCallDataWithByteCode(this FlatClient client, string calldata, string byteCode,DecodeCalldataBytecodeBackend? opts=null) => client.DecodeCallDataWithByteCodeAsync(calldata, byteCode, opts).RunAndUnwrap();
+        public static DecodedCalldata DecodeCallDataWithSource(this FlatClient client, string calldata, string sourceCode,CompileOptsBackend? opts=null) => client.DecodeCallDataWithSourceAsync(calldata, sourceCode, opts).RunAndUnwrap();
         public static CompilerVersion GetCompilerVersion(this FlatClient client) => client.GetCompilerVersionAsync().RunAndUnwrap();
         public static APIVersion GetCompilerAPIVersion(this FlatClient client) => client.GetCompilerAPIVersionAsync().RunAndUnwrap();
         public static API GetCompilerApi(this FlatClient client) => client.GetCompilerApiAsync().RunAndUnwrap();
-        public static ACI GenerateACI(this FlatClient client, string contractCode) => client.GenerateACIAsync(contractCode).RunAndUnwrap();
-        public static ByteCode Compile(this FlatClient client, string contractCode, string srcFile, object fileSystem) => client.CompileAsync(contractCode, srcFile, fileSystem).RunAndUnwrap();
+
+        public static ACI GenerateACI(this FlatClient client, string contractCode,CompileOptsBackend? opts=null) => client.GenerateACIAsync(contractCode, opts).RunAndUnwrap();
+        public static ByteCode Compile(this FlatClient client, string contractCode, string srcFile, object fileSystem, CompileOptsBackend? opts=null) => client.CompileAsync(contractCode, srcFile, fileSystem, opts).RunAndUnwrap();
+        
         public static CommitmentId CreateDebugCommitmentId(this FlatClient client, string name, BigInteger salt) => client.CreateDebugCommitmentIdAsync(name, salt).RunAndUnwrap();
         public static UnsignedTx CreateDebugChannelWithdraw(this FlatClient client, ChannelWithdrawTx tx) => client.CreateDebugChannelWithdrawAsync(tx).RunAndUnwrap();
         public static UnsignedTx CreateDebugChannelCloseMutual(this FlatClient client, ChannelCloseMutualTx tx) => client.CreateDebugChannelCloseMutualAsync(tx).RunAndUnwrap();

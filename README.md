@@ -13,11 +13,11 @@ Loosely based on the following sdks:
 
 Supports
 
-AEternity >= v4.2.0 & Sophia >= v3.2.0
+AEternity >= v5.0.0 & Sophia >= v4.0.0
 
 
 * All the code is async. But Sync extension methods exists for easy use.
-* Net Standard 2.0. Both .NET Core and .NET Framework are supported
+* Net Standard 2.1. Supports .NET Core 3.0
 * You can use the FlatClient for porting (it maps all the Node/Compiler functions), or the normal client which is fluent and easy to use.
 * OracleService and AsyncOracleService provides a background service capable of running an oracle.
 * Clients Configuration constructor can use IConfiguration and ILogger for dependency injection on ASP NET projects.

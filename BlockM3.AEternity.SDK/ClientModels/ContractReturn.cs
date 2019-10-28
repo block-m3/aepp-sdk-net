@@ -53,7 +53,7 @@ namespace BlockM3.AEternity.SDK.ClientModels
                 Function f = c.Functions.First(a => a.Name == function);
                 JToken ret = null;
                 if (obj.ReturnValue != "cb_Xfbg4g==")
-                    ret = await account.Client.DecodeCallResultAsync(c.SourceCode, function, obj.ReturnType, obj.ReturnValue, token).ConfigureAwait(false);
+                    ret = await account.Client.DecodeCallResultAsync(c.SourceCode, function, obj.ReturnType, obj.ReturnValue, c.CompileOpts, token).ConfigureAwait(false);
                 switch (obj.ReturnType)
                 {
                     case "revert":
