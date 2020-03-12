@@ -1,7 +1,7 @@
 swagger: '2.0'
 info:
   description: 'This is the [Aeternity](https://www.aeternity.com/) compiler API.'
-  version: 4.0.0
+  version: 4.2.0
   title: Aeternity node
   termsOfService: 'https://www.aeternity.com/terms/'
   contact:
@@ -241,6 +241,84 @@ paths:
           description: Invalid data
           schema:
             $ref: '#/definitions/CompilerErrors'
+
+  /fate-assembler:
+    post:
+      operationId: 'GetFateAssemblerCode'
+      description: 'Get FATE assembler code from bytecode'
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: body
+          description: contract byte array
+          required: true
+          schema:
+            $ref: '#/definitions/ByteCodeInput'
+      responses:
+        '200':
+          description: The FATE assembler
+          schema:
+            $ref: '#/definitions/FateAssembler'
+        '400':
+          description: Invalid data
+          schema:
+            $ref: '#/definitions/Error'
+
+
+  /validate-byte-code:
+    post:
+      operationId: 'ValidateByteCode'
+      description: 'Verify that an encoded byte array is the result of compiling a given contract'
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: body
+          description: contract byte array and source code
+          required: true
+          schema:
+            $ref: '#/definitions/ValidateByteCodeInput'
+      responses:
+        '200':
+          description: Validation successful
+        '400':
+          description: Invalid data
+          schema:
+            $ref: '#/definitions/Error'
+        '400':
+          description: Invalid contract
+          schema:
+            $ref: '#/definitions/CompilerErrors'
+
+  /compiler-version:
+    post:
+      operationId: 'GetCompilerVersion'
+      description: 'Extract compiler version from bytecode'
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: body
+          description: contract byte array
+          required: true
+          schema:
+            $ref: '#/definitions/ByteCodeInput'
+      responses:
+        '200':
+          description: The compiler version
+          schema:
+            $ref: '#/definitions/CompilerVersion'
+        '400':
+          description: Invalid data
+          schema:
+            $ref: '#/definitions/Error'
 
   /version:
     get:
@@ -507,6 +585,29 @@ definitions:
       - calldata
       - function
       - source
+  ByteCodeInput:
+    type: object
+    properties:
+      bytecode:
+        description: 'Compiled contract'
+        $ref: '#/definitions/EncodedByteArray'
+    required:
+      - bytecode
+  ValidateByteCodeInput:
+    type: object
+    properties:
+      bytecode:
+        description: 'Compiled contract'
+        $ref: '#/definitions/EncodedByteArray'
+      source:
+        description: 'Sophia contract source code'
+        type: string
+      options:
+        $ref: '#/definitions/CompileOpts'
+    required:
+      - bytecode
+      - source
+      - options
   DecodedCallresult:
     type: object
     properties:
@@ -539,4 +640,12 @@ definitions:
   EncodedByteArray:
     description: 'Prefixed (cb_) Base64Check encoded byte array'
     type: string
+  FateAssembler:
+    type: object
+    properties:
+      fate-assembler:
+        description: 'Fate assembler code'
+        type: string
+    required:
+      - fate-assembler
 

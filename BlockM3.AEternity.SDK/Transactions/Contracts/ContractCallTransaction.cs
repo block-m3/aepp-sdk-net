@@ -29,7 +29,7 @@ namespace BlockM3.AEternity.SDK.Transactions.Contracts
         {
             RLPEncoder enc = new RLPEncoder();
             enc.AddInt(Constants.SerializationTags.OBJECT_TAG_CONTRACT_CALL_TRANSACTION);
-            enc.AddInt(Constants.SerializationTags.VSN);
+            enc.AddInt(Constants.SerializationTags.V_1);
             enc.AddByteArray(Encoding.DecodeCheckAndTag(Model.CallerId, Constants.SerializationTags.ID_TAG_ACCOUNT));
             enc.AddNumber(Model.Nonce);
             enc.AddByteArray(Encoding.DecodeCheckAndTag(Model.ContractId, Constants.SerializationTags.ID_TAG_CONTRACT));

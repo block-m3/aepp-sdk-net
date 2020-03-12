@@ -28,7 +28,7 @@ namespace BlockM3.AEternity.SDK.Transactions
         {
             RLPEncoder enc = new RLPEncoder();
             enc.AddInt(Constants.SerializationTags.OBJECT_TAG_SPEND_TRANSACTION);
-            enc.AddInt(Constants.SerializationTags.VSN);
+            enc.AddInt(Constants.SerializationTags.V_1);
             enc.AddByteArray(Encoding.DecodeCheckAndTag(Model.SenderId, Constants.SerializationTags.ID_TAG_ACCOUNT));
             enc.AddByteArray(Encoding.DecodeCheckAndTag(Model.RecipientId, Constants.SerializationTags.ID_TAG_ACCOUNT));
             enc.AddNumber(Model.Amount);

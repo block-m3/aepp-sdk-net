@@ -1,7 +1,7 @@
 swagger: '2.0'
 info:
   description: 'This is the [Aeternity](https://www.aeternity.com/) node API.'
-  version: 5.0.0-rc.5
+  version: 5.4.1
   title: Aeternity node
   termsOfService: 'https://www.aeternity.com/terms/'
   contact:
@@ -712,34 +712,6 @@ paths:
           description: 'Contract not found'
           schema:
             $ref: '#/definitions/Error'
-  /contracts/{pubkey}/store:
-    get:
-      tags:
-        - external
-        - contract
-      operationId: GetContractStore
-      description: 'Get contract store by pubkey'
-      produces:
-        - application/json
-      parameters:
-        - in: path
-          name: pubkey
-          description: 'The pubkey of the contract'
-          required: true
-          # Encoded contract pubkey 'ct_...'
-          # pattern: "^ct_[1-9A-HJ-NP-Za-km-z]*$"
-          type: string
-      responses:
-        '200':
-          description: 'Contract Store'
-          schema:
-            $ref: '#/definitions/ContractStore'
-        '400':
-          description: 'Invalid pubkey'
-          schema:
-            $ref: '#/definitions/Error'
-        '404':
-          description: 'Contract not found'
   /contracts/{pubkey}/poi:
     get:
       tags:
@@ -1657,7 +1629,7 @@ paths:
         - internal
         - debug
       operationId: 'DryRunTxs'
-      description: 'Dry-run transactions on top of a given block. Supports SpendTx, ContractCreateTx and ContractCallTx'
+      description: 'Dry-run transactions on top of a given block. Supports all TXs except GAMetaTx, PayingForTx and OffchainTx'
       consumes:
         - application/json
       produces:
@@ -2598,6 +2570,8 @@ definitions:
         type: string
       peer_count:
         $ref: '#/definitions/UInt32'
+      peer_connections:
+        $ref: '#/definitions/PeerConnections'
       pending_transactions_count:
         $ref: '#/definitions/UInt32'
       network_id:
@@ -2618,6 +2592,7 @@ definitions:
       - node_version
       - node_revision
       - peer_count
+      - peer_connections
       - pending_transactions_count
       - network_id
       - peer_pubkey
@@ -2627,12 +2602,26 @@ definitions:
     type: object
     properties:
       version:
+        description: 'Protocol version (can include protocol activated by miner signalling)'
         $ref: '#/definitions/UInt32'
       effective_at_height:
+        description: 'Height at which protocol becomes active'
         $ref: '#/definitions/UInt64'
     required:
       - version
       - effective_at_height
+  PeerConnections:
+    type: object
+    properties:
+      inbound:
+        description: 'Number of inbound peer connections'
+        $ref: '#/definitions/UInt32'
+      outbound:
+        description: 'Number of outbound peer connections'
+        $ref: '#/definitions/UInt32'
+    required:
+      - inbound
+      - outbound
   GenericSignedTx:
     type: object
     properties:
@@ -2878,20 +2867,6 @@ definitions:
       - active
       - referrer_ids
       - deposit
-  ContractStore:
-    type: object
-    properties:
-      store:
-        type: array
-        items:
-          type: object
-          properties:
-            key:
-              type: string
-            value:
-              $ref: '#/definitions/EncodedByteArray'
-    required:
-      - store
   ByteCode:
     type: object
     properties:
@@ -2948,6 +2923,8 @@ definitions:
   DryRunCallContext:
     type: object
     properties:
+      tx:
+        $ref: '#/definitions/EncodedByteArray'
       tx_hash:
         $ref: '#/definitions/EncodedHash'
       stateful:

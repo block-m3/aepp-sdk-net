@@ -104,11 +104,20 @@ namespace BlockM3.AEternity.SDK.ClientModels
         public async Task<Claim> QueryDomainAsync(string domain, CancellationToken token = default(CancellationToken))
         {
             Claim cl = new Claim(domain, this);
-            NameEntry ne = await Client.GetNameIdAsync(domain, token).ConfigureAwait(false);
-            cl.Pointers = ne.Pointers.Select(a => (a.Key, a.Id)).ToList();
-            cl.NameTtl = ne.Ttl;
-            cl.Id = ne.Id;
-            return cl;
+            try
+            {
+                NameEntry ne = await Client.GetNameIdAsync(domain, token).ConfigureAwait(false);
+                cl.Pointers = ne.Pointers.ToList();
+                cl.NameTtl = ne.Ttl;
+                cl.Id = ne.Id;
+                return cl;
+            }
+            catch (ApiException e)
+            {
+                if (e.StatusCode == 404)
+                    return null;
+                throw;
+            }
         }
 
         public async Task<InProgress<bool>> SendAmountAsync(string recipientPublicKey, BigInteger amount, string payload = "", CancellationToken token = default(CancellationToken))

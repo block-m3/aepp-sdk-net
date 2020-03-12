@@ -331,7 +331,7 @@ namespace BlockM3.AEternity.SDK.Utils
         {
             RLPEncoder enc = new RLPEncoder();
             enc.AddInt(Constants.SerializationTags.OBJECT_TAG_SIGNED_TRANSACTION);
-            enc.AddInt(Constants.SerializationTags.VSN);
+            enc.AddInt(Constants.SerializationTags.V_1);
             RLPEncoder sublist = new RLPEncoder();
             sublist.AddByteArray(sig);
             enc.AddList(sublist);
