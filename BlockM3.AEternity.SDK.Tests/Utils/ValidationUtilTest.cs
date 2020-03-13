@@ -7,8 +7,8 @@ namespace BlockM3.AEternity.SDK.Tests.Utils
     [TestClass]
     public class ValidationUtilTest : BaseTest
     {
-        private readonly string domainMaxAllowedLength = "kryptokrautskryptokrautskryptokrautskryptokrautskryptokrautskryptokrautskryptokrautskryptokrautskryptokrautskryptokrautskryptokrautskryptokrautskryptokrautskryptokrautskryptokrautskryptokrautskryptokrautskryptokrautskryptokrautskryptokrautskryptokr.test";
-        private readonly string domainTooLong = "kryptokrautskryptokrautskryptokrautskryptokrautskryptokrautskryptokrautskryptokrautskryptokrautskryptokrautskryptokrautskryptokrautskryptokrautskryptokrautskryptokrautskryptokrautskryptokrautskryptokrautskryptokrautskryptokrautskryptokrautskryptokra.test";
+        private readonly string domainMaxAllowedLength = "kryptokrautskryptokrautskryptokrautskryptokrautskryptokrautskryptokrautskryptokrautskryptokrautskryptokrautskryptokrautskryptokrautskryptokrautskryptokrautskryptokrautskryptokrautskryptokrautskryptokrautskryptokrautskryptokrautskryptokrautskryptok.chain";
+        private readonly string domainTooLong = "kryptokrautskryptokrautskryptokrautskryptokrautskryptokrautskryptokrautskryptokrautskryptokrautskryptokrautskryptokrautskryptokrautskryptokrautskryptokrautskryptokrautskryptokrautskryptokrautskryptokrautskryptokrautskryptokrautskryptokrautskryptokra.chain";
 
         [TestCategory("AENS Naming System")]
         [TestMethod]
@@ -21,10 +21,10 @@ namespace BlockM3.AEternity.SDK.Tests.Utils
 
         [TestCategory("AENS Naming System")]
         [TestMethod]
-        [Description("kryptokrauts.test is valid")]
+        [Description("kryptokrauts.chain is valid")]
         public void Domain2()
         {
-            string domain = "kryptokrauts.test";
+            string domain = "kryptokrauts.chain";
             Validation.CheckNamespace(domain);
         }
 

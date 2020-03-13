@@ -39,7 +39,7 @@ namespace BlockM3.AEternity.SDK.Transactions.NameService
         {
             RLPEncoder enc = new RLPEncoder();
             enc.AddInt(Constants.SerializationTags.OBJECT_TAG_NAME_SERVICE_REVOKE_TRANSACTION);
-            enc.AddInt(Constants.SerializationTags.VSN);
+            enc.AddInt(Constants.SerializationTags.V_1);
             enc.AddByteArray(Encoding.DecodeCheckAndTag(Model.AccountId, Constants.SerializationTags.ID_TAG_ACCOUNT));
             enc.AddNumber(Model.Nonce);
             enc.AddByteArray(Encoding.DecodeCheckAndTag(Model.NameId, Constants.SerializationTags.ID_TAG_NAME));

@@ -54,11 +54,13 @@ namespace BlockM3.AEternity.SDK.Extensions
         public static SophiaJsonData DecodeCallData(this FlatClient client, string calldata, string sophiaType) => client.DecodeDataAsync(calldata, sophiaType).RunAndUnwrap();
         public static JToken DecodeCallResult(this FlatClient client, string sourceCode, string function, string callResult, string callValue,CompileOptsBackend? opts=null) => client.DecodeCallResultAsync(sourceCode, function, callResult, callValue,opts).RunAndUnwrap();
         public static DecodedCalldata DecodeCallDataWithByteCode(this FlatClient client, string calldata, string byteCode,DecodeCalldataBytecodeBackend? opts=null) => client.DecodeCallDataWithByteCodeAsync(calldata, byteCode, opts).RunAndUnwrap();
-        public static DecodedCalldata DecodeCallDataWithSource(this FlatClient client, string calldata, string sourceCode,CompileOptsBackend? opts=null) => client.DecodeCallDataWithSourceAsync(calldata, sourceCode, opts).RunAndUnwrap();
+        public static DecodedCalldata DecodeCallDataWithSource(this FlatClient client, string calldata, string function, string sourceCode,CompileOptsBackend? opts=null) => client.DecodeCallDataWithSourceAsync(calldata, sourceCode, function, opts).RunAndUnwrap();
         public static CompilerVersion GetCompilerVersion(this FlatClient client) => client.GetCompilerVersionAsync().RunAndUnwrap();
+        public static CompilerVersion GetCompilerVersion(this FlatClient client, string bytecode) => client.GetCompilerVersionAsync(bytecode).RunAndUnwrap();
+        public static void ValidateByteCode(this FlatClient client, string source, string bytecode, CompileOptsBackend? opts = null) => client.ValidateByteCodeAsync(source, bytecode, opts).RunAndUnwrap();
+        public static FateAssembler GetFateAssemblerCode(this FlatClient client, string bytecode) => client.GetFateAssemblerCodeAsync(bytecode).RunAndUnwrap();
         public static APIVersion GetCompilerAPIVersion(this FlatClient client) => client.GetCompilerAPIVersionAsync().RunAndUnwrap();
         public static API GetCompilerApi(this FlatClient client) => client.GetCompilerApiAsync().RunAndUnwrap();
-
         public static ACI GenerateACI(this FlatClient client, string contractCode,CompileOptsBackend? opts=null) => client.GenerateACIAsync(contractCode, opts).RunAndUnwrap();
         public static ByteCode Compile(this FlatClient client, string contractCode, string srcFile, object fileSystem, CompileOptsBackend? opts=null) => client.CompileAsync(contractCode, srcFile, fileSystem, opts).RunAndUnwrap();
         
@@ -92,7 +94,6 @@ namespace BlockM3.AEternity.SDK.Extensions
         public static UnsignedTx OracleExtend(this FlatClient client, OracleExtendTx tx) => client.CreateDebugOracleExtendAsync(tx).RunAndUnwrap();
         public static ContractObject GetContract(this FlatClient client, string contractPubKey) => client.GetContractAsync(contractPubKey).RunAndUnwrap();
         public static ByteCode GetContractCode(this FlatClient client, string contractPubKey) => client.GetContractCodeAsync(contractPubKey).RunAndUnwrap();
-        public static ContractStore GetContractStore(this FlatClient client, string contractPubKey) => client.GetContractStoreAsync(contractPubKey).RunAndUnwrap();
         public static PoI GetContractPoI(this FlatClient client, string contractPubKey) => client.GetContractPoIAsync(contractPubKey).RunAndUnwrap();
         public static Channel GetChannel(this FlatClient client, string channelPublicKey) => client.GetChannelAsync(channelPublicKey).RunAndUnwrap();
         public static PeerPubKey GetPeerPublicKey(this FlatClient client) => client.GetPeerPublicKeyAsync().RunAndUnwrap();
@@ -122,6 +123,7 @@ namespace BlockM3.AEternity.SDK.Extensions
         public static InProgress<OracleServer<T, S>> RegisterOracle<T, S>(this ClientModels.Account account, ulong queryFee = Constants.BaseConstants.ORACLE_QUERY_FEE, ulong fee = Constants.BaseConstants.FEE, Ttl ttl = default(Ttl), ushort abiVersion = Constants.BaseConstants.ORACLE_VM_VERSION) => account.RegisterOracleAsync<T, S>(queryFee, fee, ttl, abiVersion).RunAndUnwrap();
         public static OracleServer<T, S> GetOwnOracle<T, S>(this ClientModels.Account account) => account.GetOwnOracleAsync<T, S>().RunAndUnwrap();
         public static OracleClient<T, S> GetOracle<T, S>(this ClientModels.Account account, string oraclepubkey) => account.GetOracleAsync<T, S>(oraclepubkey).RunAndUnwrap();
+        public static InProgress<Claim> BidDomain(this Claim claim, BigInteger bid_fee, ulong fee = Constants.BaseConstants.NAME_FEE, ulong name_ttl = Constants.BaseConstants.NAME_TTL, ulong client_ttl = Constants.BaseConstants.NAME_CLIENT_TTL) => claim.BidDomainAsync(bid_fee, fee, name_ttl).RunAndUnwrap();
         public static InProgress<Claim> Update(this Claim claim, ulong name_ttl = Constants.BaseConstants.NAME_TTL, ulong client_ttl = Constants.BaseConstants.NAME_CLIENT_TTL) => claim.UpdateAsync(name_ttl, client_ttl).RunAndUnwrap();
         public static InProgress<bool> Revoke(this Claim claim) => claim.RevokeAsync().RunAndUnwrap();
         public static InProgress<bool> Transfer(this Claim claim, string recipientPublicKey) => claim.TransferAsync(recipientPublicKey).RunAndUnwrap();

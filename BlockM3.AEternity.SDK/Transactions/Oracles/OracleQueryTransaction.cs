@@ -29,7 +29,7 @@ namespace BlockM3.AEternity.SDK.Transactions.Oracles
         {
             RLPEncoder enc = new RLPEncoder();
             enc.AddInt(Constants.SerializationTags.OBJECT_TAG_ORACLE_QUERY_TRANSACTION);
-            enc.AddInt(Constants.SerializationTags.VSN);
+            enc.AddInt(Constants.SerializationTags.V_1);
             enc.AddByteArray(Encoding.DecodeCheckAndTag(Model.SenderId, Constants.SerializationTags.ID_TAG_ACCOUNT));
             enc.AddNumber(Model.Nonce);
             enc.AddByteArray(Encoding.DecodeCheckAndTag(Model.OracleId, Constants.SerializationTags.ID_TAG_ORACLE));

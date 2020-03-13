@@ -24,7 +24,7 @@ namespace BlockM3.AEternity.SDK.Integration.Tests
         [TestMethod]
         public void TransactionNameServiceTests()
         {
-            InvalidDomain = TestConstants.DOMAIN + random.Next();
+            InvalidDomain = TestConstants.DOMAIN + random.Next() + "" + random.Next() + "" + random.Next() + "" + random.Next();
             validDomain = InvalidDomain + TestConstants.NAMESPACE;
             BuildNativeNamePreclaimTransaction();
             PostNameClaimTx();
@@ -74,10 +74,11 @@ namespace BlockM3.AEternity.SDK.Integration.Tests
             logger.LogInformation("NamePreclaimTx hash: " + postTxResponse.TXHash);
             Assert.AreEqual(postTxResponse.TXHash, Encoding.ComputeTxHash(signedTx.TX));
 
-            NameClaimTransaction nameClaimTx = nativeClient.CreateNameClaimTransaction(keyPair.PublicKey, validDomain, salt, nonce + 1, ttl);
+            BigInteger fee = NameServiceBiding.GetDefaultBidFee(validDomain);
+            NameClaimTransaction nameClaimTx = nativeClient.CreateNameClaimTransaction(keyPair.PublicKey, validDomain, salt, fee, Constants.BaseConstants.NAME_FEE,nonce + 1, ttl);
             UnsignedTx unsignedClaimTx = nameClaimTx.CreateUnsignedTransaction();
 
-            NameClaimTransaction nameClaimTxDebug = debugClient.CreateNameClaimTransaction(keyPair.PublicKey, validDomain, salt, nonce + 1, ttl);
+            NameClaimTransaction nameClaimTxDebug = debugClient.CreateNameClaimTransaction(keyPair.PublicKey, validDomain, salt, fee, Constants.BaseConstants.NAME_FEE, nonce + 1, ttl);
             UnsignedTx unsignedClaimTxDebug = nameClaimTxDebug.CreateUnsignedTransaction();
 
 
@@ -107,7 +108,8 @@ namespace BlockM3.AEternity.SDK.Integration.Tests
             Tx signedTx = nativeClient.SignTransaction(unsignedTx, keyPair.PrivateKey);
             PostTxResponse postTxResponse = nativeClient.PostTx(logger, signedTx);
             Assert.AreEqual(postTxResponse.TXHash, Encoding.ComputeTxHash(signedTx.TX));
-            NameClaimTransaction nameClaimTx = nativeClient.CreateNameClaimTransaction(keyPair.PublicKey, domain, salt, nonce + 1, ttl);
+            BigInteger fee = NameServiceBiding.GetDefaultBidFee(domain);
+            NameClaimTransaction nameClaimTx = nativeClient.CreateNameClaimTransaction(keyPair.PublicKey, domain, salt, fee, Constants.BaseConstants.NAME_FEE, nonce + 1, ttl);
             UnsignedTx unsignedClaimTx = nameClaimTx.CreateUnsignedTransaction();
             Tx signedClaimTx = nativeClient.SignTransaction(unsignedClaimTx, keyPair.PrivateKey);
             PostTxResponse postClaimTxResponse = nativeClient.PostTx(logger, signedClaimTx);
@@ -151,7 +153,7 @@ namespace BlockM3.AEternity.SDK.Integration.Tests
             PostTxResponse postTxResponse = nativeClient.PostTx(logger, signedTx);
             logger.LogInformation("NameRevokeTx hash: " + postTxResponse.TXHash);
             Assert.AreEqual(postTxResponse.TXHash, Encoding.ComputeTxHash(signedTx.TX));
-            Assert.ThrowsException<ApiException<Error>>(() => nativeClient.GetNameIdAsync(validDomain).TimeoutAsync(TestConstants.NUM_TRIALS_DEFAULT).RunAndUnwrap(), "Not Found");
+            Assert.ThrowsException<ApiException<Error>>(() => nativeClient.GetNameIdAsync(validDomain).TimeoutAsync(TestConstants.NUM_TRIALS_DEFAULT).RunAndUnwrap(), "Name Not Found");
             logger.LogInformation("Validated, that namespace {validDomain} is revoked");
         }
     }

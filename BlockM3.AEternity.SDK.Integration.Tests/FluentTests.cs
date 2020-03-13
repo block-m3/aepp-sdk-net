@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Numerics;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using BlockM3.AEternity.SDK.ClientModels;
 using BlockM3.AEternity.SDK.Extensions;
@@ -77,7 +78,7 @@ namespace BlockM3.AEternity.SDK.Integration.Tests
             Assert.AreEqual(claim.Domain, domain);
             bool res = claim.Revoke().WaitForFinish(TimeSpan.FromSeconds(30));
             Assert.IsTrue(res);
-            Assert.ThrowsException<ApiException<Error>>(() => account.QueryDomain(domain), "Not Found");
+            Assert.AreEqual(account.QueryDomain(domain),null);
         }
 
         [TestMethod]
