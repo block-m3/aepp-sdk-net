@@ -11,7 +11,7 @@ namespace BlockM3.AEternity.SDK.Utils
     {
         private static ulong[] baseRanges = {5702887, 3524578, 2178309, 1346269, 832040, 514229, 317811, 196418, 121393, 75025, 46368, 28657, 17711, 10946, 6765, 4181, 2584, 1597, 987, 610, 377, 233, 144, 89, 55, 34, 21, 13, 8, 5, 3};
 
-        public static Dictionary<int,double> NameFees { get; }
+        public static Dictionary<int,double> NameFees { get; } = new Dictionary<int, double>();
 
 
         static NameServiceBiding()
@@ -24,7 +24,7 @@ namespace BlockM3.AEternity.SDK.Utils
         public static BigInteger GetDefaultBidFee(string domain)
         {
             int length = GetDomainLength(domain);
-            return new BigInteger(NameFees[length >= Constants.BaseConstants.NAME_BID_MAX_LENGTH ? Constants.BaseConstants.NAME_BID_MAX_LENGTH : length]);
+            return new BigInteger(NameFees[length >= Constants.BaseConstants.MAX_BID_FEE_LENGTH ? Constants.BaseConstants.MAX_BID_FEE_LENGTH : length]);
         }
 
         public static BigInteger GetBidFee(string domain, ulong start_fee = Constants.BaseConstants.NAME_FEE, double increment=Constants.BaseConstants.NAME_FEE_BID_INCREMENT)
@@ -61,25 +61,6 @@ namespace BlockM3.AEternity.SDK.Utils
             return length;
         }
 
-        public static ICollection<NamePointer> IdsToPointers(ICollection<string> strings)
-        {
-            List<NamePointer> pointers=new List<NamePointer>();
-            foreach (string s in strings)
-            {
-                if (s.StartsWith(Constants.ApiIdentifiers.ACCOUNT_PUBKEY))
-                    pointers.Add(new NamePointer {Id = s, Key = Constants.PointersNames.ACCOUNT_PUBKEY});
-                if (s.StartsWith(Constants.ApiIdentifiers.CHANNEL))
-                    pointers.Add(new NamePointer {Id = s, Key = Constants.PointersNames.CHANNEL});
-                if (s.StartsWith(Constants.ApiIdentifiers.ORACLE_PUBKEY))
-                    pointers.Add(new NamePointer {Id = s, Key = Constants.PointersNames.ORACLE_PUBKEY});
-                if (s.StartsWith(Constants.ApiIdentifiers.CONTRACT_PUBKEY))
-                    pointers.Add(new NamePointer {Id = s, Key = Constants.PointersNames.CONTRACT_PUBKEY});
-            }
-            return pointers;
-        }
-        public static IList<string> PointersToIds(ICollection<NamePointer> pointers)
-        {
-            return pointers.Select(a => a.Id).ToList();
-        }
+
     }
 }

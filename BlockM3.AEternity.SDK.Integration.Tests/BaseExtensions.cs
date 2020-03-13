@@ -74,7 +74,7 @@ namespace BlockM3.AEternity.SDK.Integration.Tests
 
         public static UnsignedTx CreateUnsignedContractCallTx(this FlatClient client, ILogger logger, string callerId, ulong nonce, string calldata, BigInteger? gasPrice, string contractId, BigInteger amount)
         {
-            ushort abiVersion = 1;
+            ushort abiVersion = Constants.BaseConstants.ABI_VERSION;
             ulong ttl = 0;
             ulong gas = 1579000;
             ContractCallTransaction contractTx = client.CreateContractCallTransaction(abiVersion, calldata, contractId, gas, gasPrice ?? Constants.BaseConstants.MINIMAL_GAS_PRICE, nonce, callerId, ttl);

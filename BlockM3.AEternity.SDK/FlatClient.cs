@@ -41,7 +41,7 @@ namespace BlockM3.AEternity.SDK
         }
 
         private string _backend;
-
+        public string Backend => _backend;
 
         internal Configuration Configuration { get; }
 
@@ -293,7 +293,7 @@ namespace BlockM3.AEternity.SDK
             inp.Bytecode = bytecode;
             return _compilerClient.GetFateAssemblerCodeAsync(inp,token);
         }
-        public async Task<DecodedCalldata> DecodeCallDataWithSourceAsync(string calldata, string sourceCode, CompileOptsBackend? opts = null, CancellationToken token = default(CancellationToken))
+        public async Task<DecodedCalldata> DecodeCallDataWithSourceAsync(string calldata, string sourceCode, string function, CompileOptsBackend? opts = null, CancellationToken token = default(CancellationToken))
         {
             await CheckCompilerBackendAsync().ConfigureAwait(false);
             DecodeCalldataSource body = new DecodeCalldataSource();
@@ -302,6 +302,7 @@ namespace BlockM3.AEternity.SDK
             if (opts == null)
                 opts = _backend == "fate" ? CompileOptsBackend.Fate : CompileOptsBackend.Aevm;
             body.Options = new CompileOpts() {Backend = opts.Value};
+            body.Function = function;
             return await _compilerClient.DecodeCalldataSourceAsync(body, token).ConfigureAwait(false);
         }
 
@@ -480,7 +481,7 @@ namespace BlockM3.AEternity.SDK
         public NameUpdateTransaction CreateNameUpdateTransaction() => new NameUpdateTransaction(_factory, this);
 
 
-        public NameClaimTransaction CreateNameClaimTransaction(string accountId, string name, BigInteger nameSalt, ulong nonce, ulong ttl)
+        public NameClaimTransaction CreateNameClaimTransaction(string accountId, string name, BigInteger nameSalt, BigInteger fee, ulong nonce, ulong ttl)
         {
             return new NameClaimTransaction(_factory, this)
             {
@@ -488,13 +489,14 @@ namespace BlockM3.AEternity.SDK
                 {
                     AccountId = accountId,
                     Name = name,
+                    Fee = fee,
                     NameSalt = nameSalt,
                     Nonce = nonce,
                     Ttl = ttl
                 }
             };
         }
-        public NameClaimTransaction CreateNameClaimTransaction(string accountId, string name, BigInteger nameSalt, BigInteger? bid_fee, ulong nonce, ulong ttl)
+        public NameClaimTransaction CreateNameClaimTransaction(string accountId, string name, BigInteger nameSalt, BigInteger? bid_fee, BigInteger fee, ulong nonce, ulong ttl)
         {
             return new NameClaimTransaction(_factory, this)
             {
@@ -504,6 +506,7 @@ namespace BlockM3.AEternity.SDK
                     Name = name,
                     NameSalt = nameSalt,
                     Nonce = nonce,
+                    Fee = fee,
                     NameFee = bid_fee,
                     Ttl = ttl
                 }
@@ -520,7 +523,7 @@ namespace BlockM3.AEternity.SDK
                 Model = new OracleRegisterTx
                 {
                     AccountId = accountId,
-                    QueryFee = fee,
+                    QueryFee = queryFee,
                     Fee = fee,
                     AbiVersion = abiVersion,
                     OracleTtl = new TTL {Type = oracleTtlType, Value = oraclTtl},

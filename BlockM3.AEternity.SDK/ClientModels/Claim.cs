@@ -89,7 +89,7 @@ namespace BlockM3.AEternity.SDK.ClientModels
         {
             Account.ValidatePrivateKey();
             Account.Nonce++;
-            await SignAndSendAsync(Account.Client.CreateNameClaimTransaction(Account.KeyPair.PublicKey, Domain, 0, bid_fee, fee, name_ttl), token).ConfigureAwait(false);
+            await SignAndSendAsync(Account.Client.CreateNameClaimTransaction(Account.KeyPair.PublicKey, Domain, 0, bid_fee,  fee, Account.Nonce, name_ttl), token).ConfigureAwait(false);
             return new InProgress<Claim>(new WaitForHash(this));
         }
 
@@ -106,10 +106,21 @@ namespace BlockM3.AEternity.SDK.ClientModels
         {
             return GetAuctionEndBlock((ulong)Tx.BlockHeight);
         }
+
+        private async Task VerifyID(CancellationToken token)
+        {
+            if (!string.IsNullOrEmpty(Id))
+                return;
+            NameEntry entry=await Account.Client.GetNameIdAsync(Domain, token);
+            Id=entry.Id;
+            NameTtl = entry.Ttl;
+        }
+
         public async Task<InProgress<Claim>> UpdateAsync(ulong name_ttl = Constants.BaseConstants.NAME_TTL, ulong client_ttl = Constants.BaseConstants.NAME_CLIENT_TTL, CancellationToken token = default(CancellationToken))
         {
             Account.ValidatePrivateKey();
             Account.Nonce++;
+            await VerifyID(token);
             await SignAndSendAsync(Account.Client.CreateNameUpdateTransaction(Account.KeyPair.PublicKey, Id, Account.Nonce, Account.Ttl, client_ttl, name_ttl, Pointers), token).ConfigureAwait(false);
             return new InProgress<Claim>(new WaitForHash(this));
         }
@@ -118,6 +129,7 @@ namespace BlockM3.AEternity.SDK.ClientModels
         {
             Account.ValidatePrivateKey();
             Account.Nonce++;
+            await VerifyID(token);
             await SignAndSendAsync(Account.Client.CreateNameRevokeTransaction(Account.KeyPair.PublicKey, Id, Account.Nonce, Account.Ttl), token).ConfigureAwait(false);
             return new InProgress<bool>(new WaitForHash(this));
         }
@@ -126,6 +138,7 @@ namespace BlockM3.AEternity.SDK.ClientModels
         {
             Account.ValidatePrivateKey();
             Account.Nonce++;
+            await VerifyID(token);
             await SignAndSendAsync(Account.Client.CreateNameTransferTransaction(Account.KeyPair.PublicKey, Id, recipientPublicKey, Account.Nonce, Account.Ttl), token).ConfigureAwait(false);
             return new InProgress<bool>(new WaitForHash(this));
         }

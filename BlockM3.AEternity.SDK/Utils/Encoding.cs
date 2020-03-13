@@ -268,7 +268,8 @@ namespace BlockM3.AEternity.SDK.Utils
 
         public static string GenerateCommitmentHash(string name, BigInteger salt)
         {
-            return EncodeCheck(Hash(NameId(name).Concatenate(BigIntegerToBytes(salt))), Constants.ApiIdentifiers.COMMITMENT);
+
+            return EncodeCheck(Hash(System.Text.Encoding.UTF8.GetBytes(name).Concatenate(BigIntegerToBytes(salt))), Constants.ApiIdentifiers.COMMITMENT);
         }
 
         /**

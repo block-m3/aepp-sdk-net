@@ -65,8 +65,8 @@ namespace BlockM3.AEternity.SDK.Integration.Tests
             Account account = nativeClient.GetAccount(baseKeyPair.PublicKey);
             string ownerId = baseKeyPair.PublicKey;
 
-            ushort abiVersion = 1;
-            ushort vmVersion = 4;
+            ushort abiVersion = Constants.BaseConstants.ABI_VERSION;
+            ushort vmVersion = Constants.BaseConstants.VM_VERSION;
             BigInteger amount = 0;
             BigInteger deposit = 0;
             ulong ttl = 0;
@@ -125,7 +125,7 @@ namespace BlockM3.AEternity.SDK.Integration.Tests
             Assert.AreEqual(1, dryRunResults.Results.Count);
             DryRunResult dryRunResult = dryRunResults.Results.First();
             Assert.AreEqual("ok", dryRunResult.Result);
-            ContractCallTransaction contractAfterDryRunTx = nativeClient.CreateContractCallTransaction(1, calldata.CallData, localDeployedContractId, dryRunResult.CallObj.GasUsed, dryRunResult.CallObj.GasPrice, nonce, baseKeyPair.PublicKey, 0);
+            ContractCallTransaction contractAfterDryRunTx = nativeClient.CreateContractCallTransaction(Constants.BaseConstants.ABI_VERSION, calldata.CallData, localDeployedContractId, dryRunResult.CallObj.GasUsed, dryRunResult.CallObj.GasPrice, nonce, baseKeyPair.PublicKey, 0);
             contractAfterDryRunTx.Model.Amount = new BigInteger(paymentValue);
 
             UnsignedTx unsignedTxNative = contractAfterDryRunTx.CreateUnsignedTransaction();

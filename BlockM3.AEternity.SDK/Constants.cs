@@ -110,7 +110,7 @@ namespace BlockM3.AEternity.SDK
             // see https://github.com/aeternity/aeternity/blob/72e440b8731422e335f879a31ecbbee7ac23a1cf/apps/aecore/src/aec_governance.erl#L272
             public const ulong NAME_BID_TIMEOUT_BLOCKS = 480;  // ~1 day
             public const int NAME_BID_MAX_LENGTH = 12;  // this is the max length for a domain to be part of a bid
-
+            public const int MAX_BID_FEE_LENGTH = 31;
 
 
             public const ulong FEE = 0;

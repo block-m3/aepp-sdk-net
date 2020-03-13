@@ -21,7 +21,7 @@ namespace BlockM3.AEternity.SDK.Utils
 
         public static string NAMESPACE_EXCEEDS_LIMIT = $"Domainname exceeds {DOMAIN_NAME_MAX_LENGTH} char limit.";
 
-        public static List<string> ALLOWED_NAMESPACES = new List<string>() {"test"};
+        public static List<string> ALLOWED_NAMESPACES = new List<string>() {"chain"};
 
         public static string MissingApiIdentifier(string id) => string.Format(MISSING_API_IDENTIFIER, id);
 

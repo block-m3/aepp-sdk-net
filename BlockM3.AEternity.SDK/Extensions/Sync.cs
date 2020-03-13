@@ -54,7 +54,7 @@ namespace BlockM3.AEternity.SDK.Extensions
         public static SophiaJsonData DecodeCallData(this FlatClient client, string calldata, string sophiaType) => client.DecodeDataAsync(calldata, sophiaType).RunAndUnwrap();
         public static JToken DecodeCallResult(this FlatClient client, string sourceCode, string function, string callResult, string callValue,CompileOptsBackend? opts=null) => client.DecodeCallResultAsync(sourceCode, function, callResult, callValue,opts).RunAndUnwrap();
         public static DecodedCalldata DecodeCallDataWithByteCode(this FlatClient client, string calldata, string byteCode,DecodeCalldataBytecodeBackend? opts=null) => client.DecodeCallDataWithByteCodeAsync(calldata, byteCode, opts).RunAndUnwrap();
-        public static DecodedCalldata DecodeCallDataWithSource(this FlatClient client, string calldata, string sourceCode,CompileOptsBackend? opts=null) => client.DecodeCallDataWithSourceAsync(calldata, sourceCode, opts).RunAndUnwrap();
+        public static DecodedCalldata DecodeCallDataWithSource(this FlatClient client, string calldata, string function, string sourceCode,CompileOptsBackend? opts=null) => client.DecodeCallDataWithSourceAsync(calldata, sourceCode, function, opts).RunAndUnwrap();
         public static CompilerVersion GetCompilerVersion(this FlatClient client) => client.GetCompilerVersionAsync().RunAndUnwrap();
         public static CompilerVersion GetCompilerVersion(this FlatClient client, string bytecode) => client.GetCompilerVersionAsync(bytecode).RunAndUnwrap();
         public static void ValidateByteCode(this FlatClient client, string source, string bytecode, CompileOptsBackend? opts = null) => client.ValidateByteCodeAsync(source, bytecode, opts).RunAndUnwrap();

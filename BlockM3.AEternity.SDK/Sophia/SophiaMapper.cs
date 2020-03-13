@@ -23,6 +23,8 @@ namespace BlockM3.AEternity.SDK.Sophia
         public SophiaType OutputType { get; set; }
 
         public bool StateFul { get; set; }
+
+        public bool Payable { get; set; }
     }
 
 
@@ -302,6 +304,14 @@ namespace BlockM3.AEternity.SDK.Sophia
                         k = k.Substring(0, eq);
                     m.ContractName = k.Trim();
                 }
+                else if (n.StartsWith("payable contract"))
+                {
+                    string k = n.Substring(17);
+                    int eq = k.IndexOf('=');
+                    if (eq > -1)
+                        k = k.Substring(0, eq);
+                    m.ContractName = k.Trim();
+                }
                 else if (n.StartsWith("record"))
                 {
                     m.Records.Add(n.Substring(6).Trim());
@@ -322,13 +332,24 @@ namespace BlockM3.AEternity.SDK.Sophia
                 {
                     m.TypeDefs.Add(n.Substring(5).Trim());
                 }
-                else if (n.StartsWith("entrypoint") || n.StartsWith("function"))
+                else if (n.StartsWith("entrypoint") || n.StartsWith("function") || n.StartsWith("payable entrypoint"))
                 {
-                    string k;
-                    if (n.StartsWith("entrypoint"))
-                        k = n.Substring(11);
-                    else
-                        k = n.Substring(8);
+                    string k=n;
+                    bool end;
+                    do
+                    {
+                        end = true;
+                        if (k.StartsWith("entrypoint"))
+                        {
+                            k = k.Substring(11);
+                            end = false;
+                        }
+                        else if (k.StartsWith("payable") || k.StartsWith("function"))
+                        {
+                            k = k.Substring(8);
+                            end = false;
+                        }
+                    } while (!end);
                     int idx = k.IndexOf(':');
                     string name = k.Substring(0, idx).Trim();
                     k = k.Substring(idx + 1);
@@ -383,6 +404,7 @@ namespace BlockM3.AEternity.SDK.Sophia
                 {
                     bool stateful = false;
                     bool found = false;
+                    bool payable = false;
                     foreach (JToken dta in function.Children())
                     {
                         JProperty prop = dta as JProperty;
@@ -398,12 +420,18 @@ namespace BlockM3.AEternity.SDK.Sophia
                             {
                                 stateful = bool.Parse(prop.Value.ToString());
                             }
+
+                            if (prop.Name == "payable")
+                            {
+                                payable = bool.Parse(prop.Value.ToString());
+                            }
                         }
                     }
 
                     if (found)
                     {
                         f.StateFul = stateful;
+                        f.Payable = payable;
                         break;
                     }
                 }

@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Numerics;
 using System.Threading;
 using System.Threading.Tasks;
@@ -35,6 +36,12 @@ namespace BlockM3.AEternity.SDK.Transactions.NameService
 
         public override byte[] Serialize()
         {
+            Debug.WriteLine("PRECLAIM");
+            Debug.WriteLine("AccountId: "+Model.AccountId);
+            Debug.WriteLine("Nonce: "+Model.Nonce);
+            Debug.WriteLine("CommitmentID: "+Model.CommitmentID);
+            Debug.WriteLine("Fee: "+Model.Fee);
+            Debug.WriteLine("Ttl: "+Model.Ttl);
             RLPEncoder enc = new RLPEncoder();
             enc.AddInt(Constants.SerializationTags.OBJECT_TAG_NAME_SERVICE_PRECLAIM_TRANSACTION);
             enc.AddInt(Constants.SerializationTags.V_1);

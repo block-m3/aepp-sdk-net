@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
 using System.Numerics;
 using BlockM3.AEternity.SDK.Extensions;
 using BlockM3.AEternity.SDK.Generated.Models;
@@ -8,6 +10,7 @@ using BlockM3.AEternity.SDK.Transactions.Contracts;
 using BlockM3.AEternity.SDK.Utils;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Nethereum.Hex.HexConvertors.Extensions;
 using Nethereum.RLP;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -27,7 +30,25 @@ namespace BlockM3.AEternity.SDK.Integration.Tests
         {
             DeployContractNativeOnLocalNode();
         }
+        private BigInteger CalculateVersion()
+        {
+            byte[] vmversion;
+            byte[] abiversion;
 
+            if (BitConverter.IsLittleEndian)
+            {
+                vmversion = BitConverter.GetBytes(Constants.BaseConstants.VM_VERSION).Reverse().ToArray();
+                abiversion = BitConverter.GetBytes(Constants.BaseConstants.ABI_VERSION).Reverse().ToArray();
+            }
+            else
+            {
+                vmversion = BitConverter.GetBytes(Constants.BaseConstants.VM_VERSION);
+                abiversion = BitConverter.GetBytes(Constants.BaseConstants.ABI_VERSION);
+            }
+
+            string version = BitConverter.ToString(vmversion.Concatenate(abiversion)).Replace("-", "");
+            return BigInteger.Parse(version, NumberStyles.HexNumber);
+        }
         [TestMethod]
         public void DecodeRLPArrayTest()
         {
@@ -39,13 +60,13 @@ namespace BlockM3.AEternity.SDK.Integration.Tests
                     Assert.Fail("Collection at least of 12 items required");
 
                 Assert.AreEqual(Constants.SerializationTags.OBJECT_TAG_CONTRACT_CREATE_TRANSACTION, el[0].RLPData.ToIntFromRLPDecoded());
-                Assert.AreEqual(Constants.SerializationTags.VSN, el[1].RLPData.ToIntFromRLPDecoded());
+                Assert.AreEqual(Constants.SerializationTags.V_1, el[1].RLPData.ToIntFromRLPDecoded());
                 CollectionAssert.AreEqual(el[2].RLPData, Encoding.DecodeCheckAndTag(baseKeyPair.PublicKey, Constants.SerializationTags.ID_TAG_ACCOUNT));
                 Assert.AreEqual(1, el[3].RLPData.ToBigIntegerFromRLPDecoded());
                 CollectionAssert.AreEqual(el[4].RLPData, Encoding.DecodeCheckWithIdentifier(TestConstants.TestContractByteCode));
-                Assert.AreEqual(262145, el[5].RLPData.ToBigIntegerFromRLPDecoded());
+                Assert.AreEqual(327683, el[5].RLPData.ToBigIntegerFromRLPDecoded());
                 Assert.AreEqual(1098660000000000, el[6].RLPData.ToBigIntegerFromRLPDecoded());
-                Assert.AreEqual(20000, el[7].RLPData.ToBigIntegerFromRLPDecoded());
+                Assert.AreEqual(2000, el[7].RLPData.ToBigIntegerFromRLPDecoded());
                 Assert.AreEqual(0, el[8].RLPData.ToBigIntegerFromRLPDecoded());
                 Assert.AreEqual(0, el[9].RLPData.ToBigIntegerFromRLPDecoded());
                 Assert.AreEqual(1000, el[10].RLPData.ToBigIntegerFromRLPDecoded());
@@ -68,7 +89,7 @@ namespace BlockM3.AEternity.SDK.Integration.Tests
         public void BuildCreateContractTransactionTest()
         {
             string ownerId = baseKeyPair.PublicKey;
-            ushort abiVersion = 1;
+            ushort abiVersion = Constants.BaseConstants.ABI_VERSION;
             ushort vmVersion = 4;
             BigInteger amount = 100;
             BigInteger deposit = 100;
@@ -92,7 +113,7 @@ namespace BlockM3.AEternity.SDK.Integration.Tests
         {
             Account account = nativeClient.GetAccount(baseKeyPair.PublicKey);
             string callerId = baseKeyPair.PublicKey;
-            ushort abiVersion = 1;
+            ushort abiVersion = Constants.BaseConstants.ABI_VERSION;
             ulong ttl = 20000;
             ulong gas = 1000;
             BigInteger gasPrice = 1000000000;
@@ -166,7 +187,7 @@ namespace BlockM3.AEternity.SDK.Integration.Tests
             foreach (DryRunResult result in results.Results)
             {
                 Assert.AreEqual("ok", result.Result);
-                var contractAfterDryRunTx = nativeClient.CreateContractCallTransaction(1, calldata.CallData, localDeployedContractId, result.CallObj.GasUsed, result.CallObj.GasPrice, nonce, baseKeyPair.PublicKey, 0);
+                var contractAfterDryRunTx = nativeClient.CreateContractCallTransaction(Constants.BaseConstants.ABI_VERSION, calldata.CallData, localDeployedContractId, result.CallObj.GasUsed, result.CallObj.GasPrice, nonce, baseKeyPair.PublicKey, 0);
 
                 UnsignedTx unsignedTxNative = contractAfterDryRunTx.CreateUnsignedTransaction();
                 Tx signedTxNative = nativeClient.SignTransaction(unsignedTxNative, baseKeyPair.PrivateKey);
@@ -180,15 +201,17 @@ namespace BlockM3.AEternity.SDK.Integration.Tests
                 TxInfoObject txInfoObject = nativeClient.WaitForTxInfoObject(logger, postTxResponse.TXHash);
 
                 // decode the result to json
-                JObject json = nativeClient.DecodeCalldata(logger, txInfoObject.CallInfo.ReturnValue, TestConstants.TestContractFunctionSophiaType);
-                Assert.AreEqual(TestConstants.TestContractFunctionParam, json.Value<string>("value"));
+                JToken json=nativeClient.DecodeCallResult(TestConstants.TestContractSourceCode, TestConstants.TestContractFunction, txInfoObject.CallInfo.ReturnType, txInfoObject.CallInfo.ReturnValue, CompileOptsBackend.Fate);
+
+
+                Assert.AreEqual(TestConstants.TestContractFunctionParam, json.Value<string>());
             }
         }
 
         private UnsignedTx CreateUnsignedContractCallTx(ulong nonce, string calldata, BigInteger? gasPrice)
         {
             string callerId = baseKeyPair.PublicKey;
-            ushort abiVersion = 1;
+            ushort abiVersion = Constants.BaseConstants.ABI_VERSION;
             ulong ttl = 0;
             ulong gas = 1579000;
 
@@ -201,8 +224,8 @@ namespace BlockM3.AEternity.SDK.Integration.Tests
         {
             Account account = nativeClient.GetAccount(baseKeyPair.PublicKey);
             string ownerId = baseKeyPair.PublicKey;
-            ushort abiVersion = 1;
-            ushort vmVersion = 4;
+            ushort abiVersion = Constants.BaseConstants.ABI_VERSION;
+            ushort vmVersion = Constants.BaseConstants.VM_VERSION;
             BigInteger amount = 0;
             BigInteger deposit = 0;
             ulong ttl = 0;
@@ -242,8 +265,9 @@ namespace BlockM3.AEternity.SDK.Integration.Tests
 
 
             // decode the result to json
-            JObject json = nativeClient.DecodeCalldata(logger, txInfoObject.CallInfo.ReturnValue, TestConstants.TestContractFunctionSophiaType);
-            Assert.AreEqual(TestConstants.TestContractFunctionParam, json.Value<string>("value"));
+
+            JToken json=nativeClient.DecodeCallResult(TestConstants.TestContractSourceCode, TestConstants.TestContractFunction, txInfoObject.CallInfo.ReturnType, txInfoObject.CallInfo.ReturnValue, CompileOptsBackend.Fate);
+            Assert.AreEqual(TestConstants.TestContractFunctionParam, json.Value<string>());
         }
     }
 }

@@ -191,7 +191,7 @@ namespace BlockM3.AEternity.SDK.ClientModels
         private async Task<DryRunResult> MeasureDeployInternalAsync(BigInteger amount, BigInteger deposit, ulong gasPrice, string constructorFunction, object[] pars, CancellationToken token)
         {
             Account.ValidatePublicKey();
-            string calldata = await EncodeCallDataAsync(constructorFunction, pars, true, token).ConfigureAwait(false);
+            string calldata = await EncodeCallDataAsync(constructorFunction, pars, null, token).ConfigureAwait(false);
             ContractCreateTransaction ts = Account.Client.CreateContractCreateTransaction(AbiVersion, amount, calldata, ByteCode, deposit, Constants.BaseConstants.CONTRACT_GAS, gasPrice, Account.Nonce + 1, Account.KeyPair.PublicKey, Account.Ttl, VmVersion);
             CreateContractUnsignedTx tx = await ts.CreateUnsignedTransactionAsync(token).ConfigureAwait(false);
             List<Dictionary<AccountParameter, object>> dict = new List<Dictionary<AccountParameter, object>>();
@@ -213,6 +213,7 @@ namespace BlockM3.AEternity.SDK.ClientModels
             ValidateContract();
             string calldata = await EncodeCallDataAsync(function, pars, stateful, token).ConfigureAwait(false);
             ContractCallTransaction ts = Account.Client.CreateContractCallTransaction(AbiVersion, calldata, ContractId, 1000000, gasPrice, Account.Nonce + 1, Account.KeyPair.PublicKey, Account.Ttl);
+            ts.Model.Amount = amount;
             UnsignedTx tx = await ts.CreateUnsignedTransactionAsync(token).ConfigureAwait(false);
             List<Dictionary<AccountParameter, object>> dict = new List<Dictionary<AccountParameter, object>>();
             dict.Add(new Dictionary<AccountParameter, object> {{AccountParameter.PUBLIC_KEY, Account.KeyPair.PublicKey}});
@@ -234,7 +235,7 @@ namespace BlockM3.AEternity.SDK.ClientModels
         }
 
 
-        public async Task<string> EncodeCallDataAsync(string function, object[] pars, bool stateful, CancellationToken token)
+        public async Task<string> EncodeCallDataAsync(string function, object[] pars, bool? stateful, CancellationToken token)
         {
             if (string.IsNullOrEmpty(function))
                 return null;
@@ -244,7 +245,7 @@ namespace BlockM3.AEternity.SDK.ClientModels
                 throw new ArgumentException($"Invalid function name '{function}' available functions are : ({string.Join(",", Functions.Select(c => "'" + c.Name + "'"))})");
             if (pars.Length != f.InputTypes.Count)
                 throw new ArgumentException($"Invalid number of parameters for function name '{function}' provided: {pars.Length} expected: {f.InputTypes.Count}");
-            if (f.StateFul != stateful)
+            if (stateful.HasValue && f.StateFul != stateful)
             {
                 if (f.StateFul)
                     throw new ArgumentException($"This function is not static should be called with a normal call");
@@ -265,7 +266,7 @@ namespace BlockM3.AEternity.SDK.ClientModels
         {
             Account.ValidatePrivateKey();
             Account.Nonce++;
-            string calldata = await EncodeCallDataAsync(constructorFunction, pars, true, token).ConfigureAwait(false);
+            string calldata = await EncodeCallDataAsync(constructorFunction, pars, null, token).ConfigureAwait(false);
             ContractCreateTransaction ts = Account.Client.CreateContractCreateTransaction(AbiVersion, amount, calldata, ByteCode, deposit, (ulong) gas, gasPrice, Account.Nonce, Account.KeyPair.PublicKey, Account.Ttl, VmVersion);
             await SignAndSendAsync(ts, token).ConfigureAwait(false);
         }
