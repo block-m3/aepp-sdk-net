@@ -40,7 +40,7 @@ namespace BlockM3.AEternity.SDK.ClientModels
 
         public T ReturnValue { get; }
 
-        internal new static async Task<DryRunContractReturn<T>> CreateAsync(Account account, Contract c, string function, DryRunResult obj, CancellationToken token)
+        internal static async Task<DryRunContractReturn<T>> CreateAsync(Account account, Contract c, string function, DryRunResult obj, CancellationToken token)
         {
 
             if (obj != null && obj.CallObj!=null && !string.IsNullOrEmpty(obj.CallObj.ReturnType))
