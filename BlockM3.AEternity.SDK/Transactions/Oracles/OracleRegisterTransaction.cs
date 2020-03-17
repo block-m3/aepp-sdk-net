@@ -28,7 +28,7 @@ namespace BlockM3.AEternity.SDK.Transactions.Oracles
         {
             RLPEncoder enc = new RLPEncoder();
             enc.AddInt(Constants.SerializationTags.OBJECT_TAG_ORACLE_REGISTER_TRANSACTION);
-            enc.AddInt(Constants.SerializationTags.VSN);
+            enc.AddInt(Constants.SerializationTags.V_1);
             enc.AddByteArray(Encoding.DecodeCheckAndTag(Model.AccountId, Constants.SerializationTags.ID_TAG_ACCOUNT));
             enc.AddNumber(Model.Nonce);
             enc.AddString(Model.QueryFormat);

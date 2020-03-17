@@ -56,13 +56,15 @@ namespace BlockM3.AEternity.SDK
 
             public const string TRANSACTION = "tx"; // base64 Transaction
 
+            public const string BYTE_ARRAY = "ba"; // base64 byte array
+
             // Indentifiers with base58
             public static string[] IDENTIFIERS_B58 = {ACCOUNT_PUBKEY, BLOCK_PROOF_OF_FRAUD_HASH, BLOCK_STATE_HASH, BLOCK_TRANSACTION_HASH, CHANNEL, COMMITMENT, CONTRACT_PUBKEY, KEY_BLOCK_HASH, MICRO_BLOCK_HASH, NAME, ORACLE_PUBKEY, ORACLE_QUERY_ID, PEER_PUBKEY, SIGNATURE, TRANSACTION_HASH};
 
             public static HashSet<string> IDENTIFIERS_B58_LIST = new HashSet<string>(IDENTIFIERS_B58);
 
             // Indentifiers with base64
-            public static string[] IDENTIFIERS_B64 = {CONTRACT_BYTE_ARRAY, ORACLE_RESPONSE, ORACLE_QUERY, PROOF_OF_INCLUSION, STATE_TREES, STATE, TRANSACTION};
+            public static string[] IDENTIFIERS_B64 = {CONTRACT_BYTE_ARRAY, ORACLE_RESPONSE, ORACLE_QUERY, PROOF_OF_INCLUSION, STATE_TREES, STATE, TRANSACTION, BYTE_ARRAY};
 
             public static HashSet<string> IDENTIFIERS_B64_LIST = new HashSet<string>(IDENTIFIERS_B64);
         }
@@ -101,6 +103,15 @@ namespace BlockM3.AEternity.SDK
             public const ulong ORACLE_QUERY_TTL_VALUE = 10;
             public const ulong ORACLE_RESPONSE_TTL_VALUE = 10;
 
+            public const ulong NAME_FEE = 0;
+            // see https://github.com/aeternity/aeternity/blob/72e440b8731422e335f879a31ecbbee7ac23a1cf/apps/aecore/src/aec_governance.erl#L67
+            public const double NAME_FEE_MULTIPLIER = 100000000000000;
+            public const double NAME_FEE_BID_INCREMENT = 0.05D;  // the increment is in percentage
+            // see https://github.com/aeternity/aeternity/blob/72e440b8731422e335f879a31ecbbee7ac23a1cf/apps/aecore/src/aec_governance.erl#L272
+            public const ulong NAME_BID_TIMEOUT_BLOCKS = 480;  // ~1 day
+            public const int NAME_BID_MAX_LENGTH = 12;  // this is the max length for a domain to be part of a bid
+            public const int MAX_BID_FEE_LENGTH = 31;
+
 
             public const ulong FEE = 0;
 
@@ -137,11 +148,19 @@ namespace BlockM3.AEternity.SDK
             public const string MAINNET = "ae_mainnet";
         }
 
+        public struct PointersNames
+        {
+            public const string CONTRACT_PUBKEY = "contract_pubkey";
+            public const string ORACLE_PUBKEY = "oracle_pubkey";
+            public const string ACCOUNT_PUBKEY = "account_pubkey";
+            public const string CHANNEL = "channel";
+        }
         public struct SerializationTags
         {
             // RLP version number
             // https://github.com/aeternity/protocol/blob/master/serializations.md#binary-serialization
-            public const int VSN = 1;
+            public const int V_1 = 1;
+            public const int V_2 = 2;
 
             // Tag constant for ids (type uint8)
             // see

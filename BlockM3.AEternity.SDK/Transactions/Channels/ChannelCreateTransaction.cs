@@ -29,7 +29,7 @@ namespace BlockM3.AEternity.SDK.Transactions.Channels
         {
             RLPEncoder enc = new RLPEncoder();
             enc.AddInt(Constants.SerializationTags.OBJECT_TAG_CHANNEL_CREATE_TRANSACTION);
-            enc.AddInt(Constants.SerializationTags.VSN);
+            enc.AddInt(Constants.SerializationTags.V_1);
             enc.AddByteArray(Encoding.DecodeCheckAndTag(Model.InitiatorId, Constants.SerializationTags.ID_TAG_ACCOUNT));
             enc.AddNumber(Model.InitiatorAmount);
             enc.AddByteArray(Encoding.DecodeCheckAndTag(Model.ResponderId, Constants.SerializationTags.ID_TAG_ACCOUNT));

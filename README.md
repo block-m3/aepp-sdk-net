@@ -24,7 +24,7 @@ AEternity >= v5.0.0 & Sophia >= v4.0.0
 
 
 * All the code is async. But Sync extension methods exists for easy use.
-* Net Standard 2.1. Supports .NET Core 3.0
+* Net Standard 2.0. Supports .NET Core 3.0
 * You can use the FlatClient for porting (it maps all the Node/Compiler functions), or the normal client which is fluent and easy to use.
 * OracleService and AsyncOracleService provides a background service capable of running an oracle.
 * Clients Configuration constructor can use IConfiguration and ILogger for dependency injection on ASP NET projects.
@@ -137,7 +137,7 @@ cfg.NativeMode = true;
 cfg.Network = Constants.Network.DEVNET;
 Client client = new Client(cf);
 Account from = client.ConstructAccount(new BaseKeyPair("79816BBF860B95600DDFABF9D81FEE81BDB30BE823B17D80B9E48BE0A7015ADF"));
-BaseKeyPair tokp = BaseKeyPair.Generate();
+BaseKeyPair kp = BaseKeyPair.Generate();
 Account oracleaccount = client.ConstructAccount(kp);
 ulong transfer = (ulong)1m.ToAettos(Unit.AE);
 account.SendAmount(oracleaccount.KeyPair.PublicKey, transfer).WaitForFinish(TimeSpan.FromSeconds(30)); //Send some money to the oracle

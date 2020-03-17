@@ -40,8 +40,8 @@ namespace BlockM3.AEternity.SDK
             _compilerClient = config.GetCompilerApiClient();
         }
 
-        private string _backend = null;
-
+        private string _backend;
+        public string Backend => _backend;
 
         internal Configuration Configuration { get; }
 
@@ -231,7 +231,7 @@ namespace BlockM3.AEternity.SDK
         }
         public async Task<Calldata> EncodeCallDataAsync(string sourceCode, string function, List<string> arguments, CompileOptsBackend? opts = null, CancellationToken token = default(CancellationToken))
         {
-            await CheckCompilerBackendAsync();
+            await CheckCompilerBackendAsync().ConfigureAwait(false);
             FunctionCallInput body = new FunctionCallInput();
             body.Source = sourceCode;
             body.Function = function;
@@ -244,7 +244,7 @@ namespace BlockM3.AEternity.SDK
                     body.Arguments.Add(arg);
             }
 
-            return await _compilerClient.EncodeCalldataAsync(body, token);
+            return await _compilerClient.EncodeCalldataAsync(body, token).ConfigureAwait(false);
         }
 
         public Task<Calldata> EncodeCallDataAsync(string sourceCode, string function, params string[] arguments) => EncodeCallDataAsync(sourceCode, function, arguments.ToList());
@@ -260,9 +260,9 @@ namespace BlockM3.AEternity.SDK
             return _compilerClient.DecodeDataAsync(body, token);
         }
 
-        public async Task<JToken> DecodeCallResultAsync(string sourceCode, string function, string callResult, string callValue,  CompileOptsBackend? opts = null, CancellationToken token = default(CancellationToken))
+        public Task<JToken> DecodeCallResultAsync(string sourceCode, string function, string callResult, string callValue,  CompileOptsBackend? opts = null, CancellationToken token = default(CancellationToken))
         {
-            await CheckCompilerBackendAsync();
+           
             SophiaCallResultInput body = new SophiaCallResultInput();
             body.Source = sourceCode;
             body.Function = function;
@@ -271,34 +271,58 @@ namespace BlockM3.AEternity.SDK
             body.Options = new CompileOpts() {Backend = opts.Value};
             body.CallResult = callResult;
             body.CallValue = callValue;
-            return await _compilerClient.DecodeCallResultFixedAsync(body, token);
+            return _compilerClient.DecodeCallResultFixedAsync(body, token);
         }
 
 
         public async Task<DecodedCalldata> DecodeCallDataWithByteCodeAsync(string calldata, string byteCode, DecodeCalldataBytecodeBackend? opts=null, CancellationToken token = default(CancellationToken))
         {
-            await CheckCompilerBackendAsync();
+            await CheckCompilerBackendAsync().ConfigureAwait(false);
             DecodeCalldataBytecode body = new DecodeCalldataBytecode();
             body.CallData = calldata;
             body.Bytecode = byteCode;
             if (opts == null)
                 opts = _backend == "fate" ? DecodeCalldataBytecodeBackend.Fate : DecodeCalldataBytecodeBackend.Aevm;
             body.Backend = opts.Value;
-            return await _compilerClient.DecodeCalldataBytecodeAsync(body, token);
+            return await _compilerClient.DecodeCalldataBytecodeAsync(body, token).ConfigureAwait(false);
         }
 
-        public async Task<DecodedCalldata> DecodeCallDataWithSourceAsync(string calldata, string sourceCode, CompileOptsBackend? opts = null, CancellationToken token = default(CancellationToken))
+        public  Task<FateAssembler> GetFateAssemblerCodeAsync(string bytecode, CancellationToken token = default(CancellationToken))
         {
-            await CheckCompilerBackendAsync();
+            ByteCodeInput inp=new ByteCodeInput();
+            inp.Bytecode = bytecode;
+            return _compilerClient.GetFateAssemblerCodeAsync(inp,token);
+        }
+        public async Task<DecodedCalldata> DecodeCallDataWithSourceAsync(string calldata, string sourceCode, string function, CompileOptsBackend? opts = null, CancellationToken token = default(CancellationToken))
+        {
+            await CheckCompilerBackendAsync().ConfigureAwait(false);
             DecodeCalldataSource body = new DecodeCalldataSource();
             body.CallData = calldata;
             body.Source = sourceCode;
             if (opts == null)
                 opts = _backend == "fate" ? CompileOptsBackend.Fate : CompileOptsBackend.Aevm;
             body.Options = new CompileOpts() {Backend = opts.Value};
-            return await _compilerClient.DecodeCalldataSourceAsync(body, token);
+            body.Function = function;
+            return await _compilerClient.DecodeCalldataSourceAsync(body, token).ConfigureAwait(false);
         }
 
+        public Task<CompilerVersion> GetCompilerVersionAsync(string bytecode, CancellationToken token = default(CancellationToken))
+        {
+            ByteCodeInput inp=new ByteCodeInput();
+            inp.Bytecode = bytecode;
+            return _compilerClient.GetCompilerVersionAsync(inp,token);
+        }
+
+        public Task ValidateByteCodeAsync(string source, string bytecode, CompileOptsBackend? opts = null, CancellationToken token = default(CancellationToken))
+        {
+            ValidateByteCodeInput input=new ValidateByteCodeInput();
+            if (opts == null)
+                opts = _backend == "fate" ? CompileOptsBackend.Fate : CompileOptsBackend.Aevm;
+            input.Options = new CompileOpts() {Backend = opts.Value};
+            input.Bytecode = bytecode;
+            input.Source = source;
+            return _compilerClient.ValidateByteCodeAsync(input, token);
+        }
         public Task<CompilerVersion> GetCompilerVersionAsync(CancellationToken token = default(CancellationToken)) => _compilerClient.VersionAsync(token);
 
         public Task<APIVersion> GetCompilerAPIVersionAsync(CancellationToken token = default(CancellationToken)) => _compilerClient.APIVersionAsync(token);
@@ -325,7 +349,10 @@ namespace BlockM3.AEternity.SDK
             if (fileSystem != null)
                 body.Options.FileSystem = fileSystem;
             return await _compilerClient.CompileContractAsync(body, token);
+
         }
+
+
 
         //Transactions
 
@@ -454,7 +481,22 @@ namespace BlockM3.AEternity.SDK
         public NameUpdateTransaction CreateNameUpdateTransaction() => new NameUpdateTransaction(_factory, this);
 
 
-        public NameClaimTransaction CreateNameClaimTransaction(string accountId, string name, BigInteger nameSalt, ulong nonce, ulong ttl)
+        public NameClaimTransaction CreateNameClaimTransaction(string accountId, string name, BigInteger nameSalt, BigInteger fee, ulong nonce, ulong ttl)
+        {
+            return new NameClaimTransaction(_factory, this)
+            {
+                Model = new NameClaimTx
+                {
+                    AccountId = accountId,
+                    Name = name,
+                    Fee = fee,
+                    NameSalt = nameSalt,
+                    Nonce = nonce,
+                    Ttl = ttl
+                }
+            };
+        }
+        public NameClaimTransaction CreateNameClaimTransaction(string accountId, string name, BigInteger nameSalt, BigInteger? bid_fee, BigInteger fee, ulong nonce, ulong ttl)
         {
             return new NameClaimTransaction(_factory, this)
             {
@@ -464,13 +506,16 @@ namespace BlockM3.AEternity.SDK
                     Name = name,
                     NameSalt = nameSalt,
                     Nonce = nonce,
+                    Fee = fee,
+                    NameFee = bid_fee,
                     Ttl = ttl
                 }
             };
         }
 
         public NameClaimTransaction CreateNameClaimTransaction() => new NameClaimTransaction(_factory, this) {Model = new NameClaimTx()};
-
+        
+    
         public OracleRegisterTransaction CreateOracleRegisterTransaction(string queryFormat, string responseFormat, string accountId, BigInteger queryFee, BigInteger fee, TTLType oracleTtlType, ulong oraclTtl, ushort abiVersion, ulong nonce, ulong ttl)
         {
             return new OracleRegisterTransaction(_factory, this)
@@ -478,7 +523,7 @@ namespace BlockM3.AEternity.SDK
                 Model = new OracleRegisterTx
                 {
                     AccountId = accountId,
-                    QueryFee = fee,
+                    QueryFee = queryFee,
                     Fee = fee,
                     AbiVersion = abiVersion,
                     OracleTtl = new TTL {Type = oracleTtlType, Value = oraclTtl},
@@ -827,12 +872,7 @@ namespace BlockM3.AEternity.SDK
             return _apiClient.GetContractCodeAsync(contractPubKey, token);
         }
 
-        public Task<ContractStore> GetContractStoreAsync(string contractPubKey, CancellationToken token = default(CancellationToken))
-        {
-            if (!contractPubKey.StartsWith(Constants.ApiIdentifiers.CONTRACT_PUBKEY))
-                throw new ArgumentException($"Invalid Contract Public Key: {Validation.MissingApiIdentifier(Constants.ApiIdentifiers.CONTRACT_PUBKEY)}");
-            return _apiClient.GetContractStoreAsync(contractPubKey, token);
-        }
+
 
         public Task<PoI> GetContractPoIAsync(string contractPubKey, CancellationToken token = default(CancellationToken))
         {

@@ -17,7 +17,7 @@ namespace BlockM3.AEternity.SDK.Tests
 
         public static string DOMAIN = "kryptokrauts";
 
-        public static string NS = "test";
+        public static string NS = "chain";
 
         public static string KK_NAMESPACE = DOMAIN + "." + NS;
 

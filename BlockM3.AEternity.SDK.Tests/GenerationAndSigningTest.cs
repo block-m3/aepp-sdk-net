@@ -1,3 +1,4 @@
+using System.Linq;
 using BlockM3.AEternity.SDK.Extensions;
 using BlockM3.AEternity.SDK.Models;
 using BlockM3.AEternity.SDK.Security.KeyPairs;
@@ -90,7 +91,7 @@ namespace BlockM3.AEternity.SDK.Tests
         [TestCategory("Crypto")]
         [TestMethod]
         [Description("Misc Tests")]
-        public void PersionalMessages()
+        public void PersonalMessages()
         {
             string message = "test";
             string messageSignatureAsHex = "20f779383f3ce0ab7781b7c8ff848e6d80f7f22d5cdc266763cd74d89c5ee0716758e75f56391711957f506d4993ae7dea62bec0f2806e6de66227f52836160a";
@@ -121,7 +122,7 @@ namespace BlockM3.AEternity.SDK.Tests
             string fromHexAddress = Encoding.EncodeCheck(Hex.Decode(hex.Substring(2)), Constants.ApiIdentifiers.ACCOUNT_PUBKEY);
             Assert.AreEqual(fromHexAddress, address);
             // commitmentHash generation test
-            string kkNamespaceCommitmentId = "cm_aJBGWWjT65JqviLSexkofr5oEAEuEySNkmghsqxNjGt2WqPW8";
+            string kkNamespaceCommitmentId = "cm_2knoLvuUVc1v6PFquezGJtVkG5nb5T8GUSTGZMLK7NTBgKX2u6";
             string generatedCommitmentId = Encoding.GenerateCommitmentHash(KK_NAMESPACE, TEST_SALT);
             Assert.AreEqual(kkNamespaceCommitmentId, generatedCommitmentId);
             // formatSalt generation test
@@ -129,15 +130,15 @@ namespace BlockM3.AEternity.SDK.Tests
             byte[] formattedSalt = Encoding.BigIntegerToBytes(TEST_SALT);
             CollectionAssert.AreEqual(oneSalt, formattedSalt);
             // nameId generation test
-            byte[] nameId = {182, 98, 49, 33, 170, 167, 215, 180, 62, 190, 1, 241, 67, 76, 100, 93, 243, 101, 162, 45, 120, 34, 190, 119, 255, 230, 114, 199, 72, 36, 190, 173};
+            byte[] nameId = {90, 9, 25, 89, 214, 192, 1, 182, 214, 58, 92, 222, 174, 210, 219, 165, 122, 103, 229, 248, 56, 42, 47, 182, 229, 108, 37, 234, 77, 75, 87, 78};
             byte[] generatedNameId = Encoding.NameId(KK_NAMESPACE);
             CollectionAssert.AreEqual(nameId, generatedNameId);
             // test concat nameId and salt
-            byte[] nameIdAndSalt = {182, 98, 49, 33, 170, 167, 215, 180, 62, 190, 1, 241, 67, 76, 100, 93, 243, 101, 162, 45, 120, 34, 190, 119, 255, 230, 114, 199, 72, 36, 190, 173, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9, 110, 178, 148, 244, 193, 91};
+            byte[] nameIdAndSalt = {90, 9, 25, 89, 214, 192, 1, 182, 214, 58, 92, 222, 174, 210, 219, 165, 122, 103, 229, 248, 56, 42, 47, 182, 229, 108, 37, 234, 77, 75, 87, 78, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9, 110, 178, 148, 244, 193, 91};
             byte[] generatedNameIdAndSalt = Encoding.NameId(KK_NAMESPACE).Concatenate(Encoding.BigIntegerToBytes(TEST_SALT));
             CollectionAssert.AreEqual(nameIdAndSalt, generatedNameIdAndSalt);
             // test concat nameIdSalt and hash
-            nameIdAndSalt = new byte[] {75, 154, 93, 216, 161, 119, 45, 33, 221, 255, 130, 163, 136, 227, 230, 90, 156, 162, 245, 187, 57, 193, 21, 224, 40, 39, 150, 225, 117, 59, 167, 243};
+            nameIdAndSalt = new byte[] {208, 191, 215, 190, 227, 131, 90, 162, 111, 138, 100, 234, 2, 46, 124, 213, 79, 82, 221, 214, 12, 76, 15, 14, 22, 73, 47, 122, 135, 160, 48, 21};
             generatedNameIdAndSalt = Encoding.Hash(Encoding.NameId(KK_NAMESPACE).Concatenate(Encoding.BigIntegerToBytes(TEST_SALT)));
             CollectionAssert.AreEqual(nameIdAndSalt, generatedNameIdAndSalt);
             // hash domain and namespace
@@ -145,7 +146,7 @@ namespace BlockM3.AEternity.SDK.Tests
             byte[] kkHash = {226, 34, 173, 200, 83, 245, 155, 227, 178, 61, 137, 129, 46, 107, 56, 219, 48, 231, 61, 232, 212, 25, 240, 132, 173, 147, 145, 146, 118, 88, 125, 26};
             CollectionAssert.AreEqual(kkHash, generatedHash);
             byte[] generatedNS = Encoding.Hash(System.Text.Encoding.Default.GetBytes(NS));
-            byte[] nsHash = {146, 139, 32, 54, 105, 67, 226, 175, 209, 30, 188, 14, 174, 46, 83, 169, 59, 241, 119, 164, 252, 243, 91, 204, 100, 213, 3, 112, 78, 101, 226, 2};
+            byte[] nsHash = {222, 238, 163, 224, 4, 101, 41, 92, 6, 19, 225, 73, 90, 197, 25, 125, 178, 113, 176, 241, 202, 2, 110, 175, 51, 160, 188, 54, 40, 85, 101, 117};
             CollectionAssert.AreEqual(nsHash, generatedNS);
         }
     }

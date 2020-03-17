@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -14,21 +15,41 @@ namespace BlockM3.AEternity.SwaggerClientGenerator
 {
     internal class Program
     {
+        private static string FindBaseDir()
+        {
+            string CurrentDir = Directory.GetCurrentDirectory();
+            while (CurrentDir != null)
+            {
+                if (Directory.Exists(Path.Combine(CurrentDir,"api")))
+                    return CurrentDir;
+                CurrentDir=Directory.GetParent(CurrentDir)?.FullName;
+            }
+
+            return CurrentDir;
+        }
         private static async Task Main(string[] args)
         {
-            if (args.Length != 2)
-                throw new ArgumentException("You must provide: sourceapidir destinationdir");
-            string sourcepath = args[0];
-            string destinationpath = args[1];
+            string baseDir = FindBaseDir();
+            string sourcepath = Path.Combine(baseDir, "api");
+            string destinationpath = Path.Combine(baseDir, "BlockM3.AEternity.SDK", "Generated");
             string[] sources = Directory.GetFiles(sourcepath, "s*.yml");
             if (sources.Length != 2)
                 throw new ArgumentException("Expecting only 2 swagger definitions in api directory (api and compiler)");
 
-            CSharpClientGeneratorSettings apisettings = new CSharpClientGeneratorSettings {CSharpGeneratorSettings = {Namespace = "BlockM3.AEternity.SDK.Generated.Api", SchemaType = SchemaType.OpenApi3, PropertyNameGenerator = new CustomTypeScriptPropertyNameGenerator()}, AdditionalNamespaceUsages = new[] {"BlockM3.AEternity.SDK.Generated.Models", "System.Numerics"}, AdditionalContractNamespaceUsages = new[] {"System.Numerics"}};
+
+            CSharpClientGeneratorSettings apisettings = new CSharpClientGeneratorSettings
+            {
+                CSharpGeneratorSettings = {Namespace = "BlockM3.AEternity.SDK.Generated.Api", 
+                SchemaType = SchemaType.OpenApi3,
+                PropertyNameGenerator = new CustomTypeScriptPropertyNameGenerator()}, AdditionalNamespaceUsages = new[] {"BlockM3.AEternity.SDK.Generated.Models", "System.Numerics"}, AdditionalContractNamespaceUsages = new[] {"System.Numerics"}
+            };
+            apisettings.CSharpGeneratorSettings.ValueGenerator = new CustomValueGenerator(apisettings.CSharpGeneratorSettings);
+
             CSharpClientGeneratorSettings compilersettings = new CSharpClientGeneratorSettings
             {
                 CSharpGeneratorSettings = {ExcludedTypeNames = new[] {"ByteCode", "Error"}, Namespace = "BlockM3.AEternity.SDK.Generated.Compiler", SchemaType = SchemaType.OpenApi3, PropertyNameGenerator = new CustomTypeScriptPropertyNameGenerator()}, AdditionalNamespaceUsages = new[] {"BlockM3.AEternity.SDK.Generated.Models", "System.Numerics"}, AdditionalContractNamespaceUsages = new[] {"System.Numerics"}, GenerateExceptionClasses = false,
             };
+            compilersettings.CSharpGeneratorSettings.ValueGenerator = new CustomValueGenerator(apisettings.CSharpGeneratorSettings);
             string compiler = sources.FirstOrDefault(a => a.Contains("compiler"));
             if (compiler == null)
                 throw new ArgumentException("Expecting compiler api definition in api");
@@ -90,13 +111,26 @@ namespace BlockM3.AEternity.SwaggerClientGenerator
         }
     }
 
+    public class CustomValueGenerator : CSharpValueGenerator
+    {
+        public CustomValueGenerator(CSharpGeneratorSettings settings) : base(settings)
+        {
+        }
+        public override string GetNumericValue(JsonObjectType type, object value, string format)
+        {
+            if (format == "int32")
+                format = "uint64";
+            string n=base.GetNumericValue(type, value, format);
+            return n;
+        }
+    }
     public class CustomTypeScriptPropertyNameGenerator : IPropertyNameGenerator
     {
         public string Generate(JsonSchemaProperty property)
         {
             string f = string.Join("", property.Name.Split(new char[] {'_', '-'}).ToList().Select((a) => a.First().ToString().ToUpperInvariant() + a.Substring(1)));
             //C# do not support property names with the same name of the parent class, change nswag behavior with this replace
-            return f.Replace("Calldata", "CallData").Replace("Tx", "TX").Replace("CommitmentId", "CommitmentID").Replace("PubKey", "PublicKey").Replace("Peers", "PeersCollection").Replace("OracleQueries", "OracleQueriesCollection");
+            return f.Replace("Calldata", "CallData").Replace("Tx", "TX").Replace("CommitmentId", "CommitmentID").Replace("PubKey", "PublicKey").Replace("Peers", "PeersCollection").Replace("OracleQueries", "OracleQueriesCollection").Replace("FateAssembler","Assembler");
         }
     }
 
@@ -113,45 +147,48 @@ namespace BlockM3.AEternity.SwaggerClientGenerator
 
         public override string Resolve(JsonSchema schema, bool isNullable, string typeNameHint)
         {
-            //Added support for uint64
-            var type = schema.ActualTypeSchema.Type;
-            if (type.HasFlag(JsonObjectType.Integer))
-            {
-                var scj = schema.ActualTypeSchema;
-                if (scj.Format == "uint64")
-                    return isNullable ? "ulong?" : "ulong";
-                if (scj.Format == "int64")
-                    return isNullable ? "long?" : "long";
-                if (scj.Maximum.HasValue)
+                //Added support for uint64
+                Debug.WriteLine(typeNameHint);
+                var type = schema.ActualTypeSchema.Type;
+                if (type.HasFlag(JsonObjectType.Integer))
                 {
-                    if (scj.Maximum.Value <= 65535)
-                    {
-                        if (scj.Minimum.HasValue && scj.Minimum.Value < 0)
-                            return isNullable ? "short?" : "short";
-                        return isNullable ? "ushort?" : "ushort";
-                    }
-
-                    if (scj.Maximum.Value <= 4294967295)
-                    {
-                        if (scj.Minimum.HasValue && scj.Minimum.Value < 0)
-                            return isNullable ? "int?" : "int";
-                        return isNullable ? "uint?" : "uint";
-                    }
-
-                    if (scj.Maximum.Value <= 18446744073709551615)
-                    {
-                        if (scj.Minimum.HasValue && scj.Minimum.Value < 0)
-                            return isNullable ? "long?" : "long";
+                    var scj = schema.ActualTypeSchema;
+                    if (scj.Format == "uint64")
                         return isNullable ? "ulong?" : "ulong";
+                    if (scj.Format == "int64")
+                        return isNullable ? "long?" : "long";
+                    if (scj.Maximum.HasValue)
+                    {
+                        if (scj.Maximum.Value <= 65535)
+                        {
+                            if (scj.Minimum.HasValue && scj.Minimum.Value < 0)
+                                return isNullable ? "short?" : "short";
+                            return isNullable ? "ushort?" : "ushort";
+                        }
+
+                        if (scj.Maximum.Value <= 4294967295)
+                        {
+                            if (scj.Minimum.HasValue && scj.Minimum.Value < 0)
+                                return isNullable ? "int?" : "int";
+                            return isNullable ? "uint?" : "uint";
+                        }
+
+                        if (scj.Maximum.Value <= 18446744073709551615)
+                        {
+                            if (scj.Minimum.HasValue && scj.Minimum.Value < 0)
+                                return isNullable ? "long?" : "long";
+                            return isNullable ? "ulong?" : "ulong";
+                        }
+                    }
+                    else
+                    {
+                        return isNullable ? "BigInteger?" : "BigInteger";
                     }
                 }
-                else
-                {
-                    return isNullable ? "BigInteger?" : "BigInteger";
-                }
-            }
 
-            return base.Resolve(schema, isNullable, typeNameHint);
+                return base.Resolve(schema, isNullable, typeNameHint);
+  
+
         }
     }
 }

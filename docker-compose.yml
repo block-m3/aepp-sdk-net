@@ -8,6 +8,9 @@ services:
     environment:
       AETERNITY_CONFIG: /home/aeternity/aeternity.yaml
     command: >
+      bin/aeternity
+      console
+      -noinput
       -aecore expected_mine_rate 15000
       -aehttp enable_debug_endpoints true
     volumes:
@@ -19,10 +22,6 @@ services:
     image: aeternity/aesophia_http:${SOPHIA_COMPILER_TAG}
     ports:
       - "3080:3080"
-
-  goggles:
-    image: marc0olo/aepp-goggles
-
   proxy:
     image: nginx:${NGINX_TAG}
     ports:
