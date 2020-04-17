@@ -33,6 +33,15 @@ AEternity >= v5.0.0 & Sophia >= v4.0.0
 * The Fluent Client serialize/de-serialize inputs and outputs into .net objects, so you don't have to worry about serializing or de-serializing stuff from contracts or oracles.
 * Several other features, like automanaging of the nonce, Easy checking or waiting for transaction finish, combination functions like MeasureAndCall (Dry & Call), etc.
 
+# Notice
+
+If you want to use the KeyStore part in mobile apps (Xamarin) there is a compiled version of libsodium in 
+
+[Xamarin-NativeLibrariesForLibSodium](Xamarin-NativeLibrariesForLibSodium)
+
+Add it as native library to your Droid/iOS project.
+
+
 # Examples
 
 ## Transfer

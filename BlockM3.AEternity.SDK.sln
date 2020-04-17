@@ -10,9 +10,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlockM3.AEternity.SDK", "Bl
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlockM3.AEternity.SDK.Tests", "BlockM3.AEternity.SDK.Tests\BlockM3.AEternity.SDK.Tests.csproj", "{0D91B928-CFB9-4855-9975-8184376F43BC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlockM3.AEternity.SDK.Integration.Tests", "BlockM3.AEternity.SDK.Integration.Tests\BlockM3.AEternity.SDK.Integration.Tests.csproj", "{7633361E-2BC9-4A18-A5E9-CDDC58F8E773}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlockM3.AEternity.SDK.Integration.Tests", "BlockM3.AEternity.SDK.Integration.Tests\BlockM3.AEternity.SDK.Integration.Tests.csproj", "{7633361E-2BC9-4A18-A5E9-CDDC58F8E773}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlockM3.AEternity.SwaggerClientGenerator", "BlockM3.AEternity.SwaggerClientGenerator\BlockM3.AEternity.SwaggerClientGenerator.csproj", "{BEDE27C4-70A8-4DA2-BE4B-BBFE3EC0FDD6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlockM3.AEternity.SwaggerClientGenerator", "BlockM3.AEternity.SwaggerClientGenerator\BlockM3.AEternity.SwaggerClientGenerator.csproj", "{BEDE27C4-70A8-4DA2-BE4B-BBFE3EC0FDD6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
